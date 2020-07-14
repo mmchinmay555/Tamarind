@@ -9,7 +9,7 @@
 
     <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_marginTop="80dp"
         android:orientation="vertical">
 
@@ -73,36 +73,64 @@
             android:fontFamily="@font/semibold"
             android:layout_marginTop="20dp"
             android:textSize="50sp"/>
-    </LinearLayout>
 
+    </LinearLayout>
     <androidx.core.widget.NestedScrollView
         android:id="@+id/bottomSheet"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/curved_layout"
+        android:elevation="16dp"
+        android:clipToPadding="false"
+        android:outlineProvider="bounds"
+        android:backgroundTint="@color/white"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
         app:behavior_hideable="false"
-        app:behavior_peekHeight="140dp"
+        app:behavior_peekHeight="190dp"
         android:orientation="vertical"
-        android:padding="20dp">
+        android:paddingVertical="20dp">
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
             android:layout_gravity="center_horizontal"
             android:orientation="vertical">
 
+            <androidx.coordinatorlayout.widget.CoordinatorLayout
+                android:id="@+id/topbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="0dp"
+                android:animateLayoutChanges="true"
+                android:visibility="gone"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/back_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/ic_back"
+                    android:tint="@color/unFocused_dark"
+                    android:paddingHorizontal="20dp"
+                    android:clickable="true"
+                    android:layout_gravity="top|left"/>
+
+            </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
             <LinearLayout
+                android:id="@+id/time_display"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:layout_gravity="center_horizontal">
 
                 <TextView
                     android:id="@+id/tot_hr"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/text"
-                    android:textSize="50sp"
+                    android:textSize="45sp"
                     android:text="1"/>
                 <TextView
                     android:id="@+id/tot_hr_txt"
@@ -116,7 +144,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/text"
-                    android:textSize="50sp"
+                    android:textSize="45sp"
                     android:text="35"/>
                 <TextView
                     android:id="@+id/tot_min_txt"
@@ -124,7 +152,7 @@
                     android:layout_height="wrap_content"
                     android:textColor="@color/text"
                     android:textSize="20sp"
-                    android:text="min"/>
+                    android:text="mins"/>
             </LinearLayout>
 
             <TextView
@@ -136,6 +164,37 @@
                 android:textColor="@color/unFocused_dark"
                 android:fontFamily="@font/semibold"/>
 
+            <androidx.coordinatorlayout.widget.CoordinatorLayout
+                android:id="@+id/app_bar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20dp"
+                android:animateLayoutChanges="true"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/menu_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/ic_menu"
+                    android:tint="@color/unFocused_dark"
+                    android:paddingVertical="10dp"
+                    android:paddingHorizontal="20dp"
+                    android:layout_gravity="top|left"/>
+
+                <ImageView
+                    android:id="@+id/more_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/ic_more"
+                    android:tint="@color/unFocused_dark"
+                    android:paddingVertical="10dp"
+                    android:paddingHorizontal="20dp"
+                    android:layout_gravity="right"/>
+
+
+            </androidx.coordinatorlayout.widget.CoordinatorLayout>
         </LinearLayout>
+
     </androidx.core.widget.NestedScrollView>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
