@@ -134,15 +134,14 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/curved_layout"
-        android:elevation="16dp"
+        android:elevation="26dp"
         android:outlineProvider="bounds"
         android:backgroundTint="@color/white"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
         app:behavior_hideable="false"
         app:behavior_peekHeight="170dp"
         android:animateLayoutChanges="true"
-        android:orientation="vertical"
-        android:paddingBottom="20dp">
+        android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -152,88 +151,83 @@
             android:layout_gravity="center_horizontal"
             android:orientation="vertical">
 
-            <androidx.coordinatorlayout.widget.CoordinatorLayout
-                android:id="@+id/topbar"
+            <LinearLayout
+                android:id="@+id/bottom_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="0dp"
-                android:animateLayoutChanges="true"
-                android:orientation="horizontal">
+                android:orientation="vertical">
 
-                <ImageView
-                    android:id="@+id/back_button"
+                <androidx.coordinatorlayout.widget.CoordinatorLayout
+                    android:id="@+id/topbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:animateLayoutChanges="true"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/back_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_back"
+                        android:tint="@color/unFocused_dark"
+                        android:paddingHorizontal="20dp"
+                        android:paddingTop="10dp"
+                        android:clickable="true"
+                        android:layout_gravity="top|left"/>
+
+                </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+                <LinearLayout
+                    android:id="@+id/time_display"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/ic_back"
-                    android:tint="@color/unFocused_dark"
-                    android:paddingHorizontal="20dp"
-                    android:clickable="true"
-                    android:layout_gravity="top|left"/>
+                    android:orientation="horizontal"
+                    android:layout_marginTop="20dp"
+                    android:layout_gravity="center_horizontal">
 
-                <View
-                    android:id="@+id/maximize"
-                    android:layout_width="30dp"
-                    android:layout_height="4dp"
-                    android:layout_weight="8"
-                    android:layout_alignParentRight="true"
-                    android:layout_below="@+id/textView1"
-                    android:layout_marginTop="0dp"
+                    <TextView
+                        android:id="@+id/tot_hr"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/text"
+                        android:textSize="28sp"
+                        android:fontFamily="@font/semibold"
+                        android:text="1"/>
+                    <TextView
+                        android:id="@+id/tot_hr_txt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/text"
+                        android:textSize="18sp"
+                        android:fontFamily="@font/semibold"
+                        android:text="hr "/>
+                    <TextView
+                        android:id="@+id/tot_min"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/text"
+                        android:textSize="28sp"
+                        android:fontFamily="@font/semibold"
+                        android:text="35"/>
+                    <TextView
+                        android:id="@+id/tot_min_txt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/text"
+                        android:textSize="18sp"
+                        android:fontFamily="@font/semibold"
+                        android:text="mins"/>
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Today"
+                    android:textSize="16sp"
                     android:layout_gravity="center_horizontal"
-                    android:background="@drawable/curved_layout"
-                    android:backgroundTint="@color/unFocused"/>
-
-            </androidx.coordinatorlayout.widget.CoordinatorLayout>
-
-            <LinearLayout
-                android:id="@+id/time_display"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="20dp"
-                android:layout_gravity="center_horizontal">
-
-                <TextView
-                    android:id="@+id/tot_hr"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/text"
-                    android:textSize="30sp"
-                    android:fontFamily="@font/semibold"
-                    android:text="1"/>
-                <TextView
-                    android:id="@+id/tot_hr_txt"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/text"
-                    android:textSize="20sp"
-                    android:fontFamily="@font/semibold"
-                    android:text="hr "/>
-                <TextView
-                    android:id="@+id/tot_min"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/text"
-                    android:textSize="30sp"
-                    android:fontFamily="@font/semibold"
-                    android:text="35"/>
-                <TextView
-                    android:id="@+id/tot_min_txt"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/text"
-                    android:textSize="20sp"
-                    android:fontFamily="@font/semibold"
-                    android:text="mins"/>
+                    android:textColor="@color/unFocused_dark"
+                    android:fontFamily="@font/semibold"/>
             </LinearLayout>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Today"
-                android:textSize="17sp"
-                android:layout_gravity="center_horizontal"
-                android:textColor="@color/unFocused_dark"
-                android:fontFamily="@font/semibold"/>
 
             <androidx.coordinatorlayout.widget.CoordinatorLayout
                 android:id="@+id/app_bar"

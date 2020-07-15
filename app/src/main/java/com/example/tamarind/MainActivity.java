@@ -18,9 +18,8 @@ public class MainActivity extends AppCompatActivity {
     private BottomSheetBehavior bottomSheetBehavior;
     ImageView menu_btn, more_btn, back_btn;
 
-    View maximize;
     androidx.coordinatorlayout.widget.CoordinatorLayout coordinatorLayout, appbar;
-    LinearLayout total_time;
+    LinearLayout total_time, bottom_layout;
 
 
     @Override
@@ -28,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        View bottomSheet = findViewById(R.id.bottomSheet);
+        final View bottomSheet = findViewById(R.id.bottomSheet);
 
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
         menu_btn = findViewById(R.id.menu_button);
@@ -37,82 +36,54 @@ public class MainActivity extends AppCompatActivity {
         appbar = findViewById(R.id.topbar);
         total_time = findViewById(R.id.time_display);
         back_btn = findViewById(R.id.back_button);
-        maximize = findViewById(R.id.maximize);
+        bottom_layout = findViewById(R.id.bottom_layout);
 
         back_btn.setVisibility(View.GONE);
 
-        Log.i("Status Bar", String.valueOf(getWindow().getDecorView().getSystemUiVisibility()));
+        bottomSheetBehavior.setDraggable(false);
 
-        bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+        bottom_layout.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onStateChanged(@NonNull final View bottomSheet, int newState) {
-                Log.i("State", String.valueOf(bottomSheetBehavior.getState()));
-                if(String.valueOf(bottomSheetBehavior.getState()).equals("3")){
-                    //total_time.setPadding(0, 20, 0, 0);
-                    back_btn.setVisibility(View.VISIBLE);
-                    maximize.setVisibility(View.GONE);
-                    bottomSheetBehavior.setDraggable(false);
-
-                    bottomSheet.setBackground(getResources().getDrawable(R.drawable.rectangle_layout));
-                    coordinatorLayout.setVisibility(View.GONE);
-
-                    getWindow().setStatusBarColor(getResources().getColor(R.color.white));
-                    getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
-
-                    back_btn.setOnClickListener(new View.OnClickListener() {
-                        @SuppressLint("WrongConstant")
-                        @Override
-                        public void onClick(View v) {
-                            bottomSheetBehavior.setState(4);
-
-                            bottomSheet.setBackground(getResources().getDrawable(R.drawable.curved_layout));
-
-                            getWindow().setStatusBarColor(getResources().getColor(R.color.colorPrimary));
-                            getWindow().getDecorView().setSystemUiVisibility(0);
-
-                            coordinatorLayout.setVisibility(View.VISIBLE);
-                            back_btn.setVisibility(View.GONE);
-                            maximize.setVisibility(View.VISIBLE);
-
-                        }
-                    });
-
-                }else if(String.valueOf(bottomSheetBehavior.getState()).equals("2")){
-                    bottomSheet.setBackground(getResources().getDrawable(R.drawable.rectangle_layout));
-                    bottomSheetBehavior.setDraggable(false);
-
-                    coordinatorLayout.setVisibility(View.GONE);
-                    back_btn.setVisibility(View.VISIBLE);
-                    maximize.setVisibility(View.GONE);
-                }else if(String.valueOf(bottomSheetBehavior.getState()).equals("4")){
-                    bottomSheetBehavior.setDraggable(true);
+            public void onClick(View v) {
+                if(String.valueOf(bottomSheetBehavior.getState()).equals("4")){
+                    expand_bottomSheet(bottomSheetBehavior, bottomSheet);
                 }
-            }
-
-            @Override
-            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-//                if(bottomSheetBehavior.isDraggable()){
-//                    total_time.setPadding(0, 40, 0, 0);
-//                    bottomSheet.setBackground(getResources().getDrawable(R.drawable.rectangle_layout));
-//                    coordinatorLayout.setVisibility(View.GONE);
-//                }else{
-//                    total_time.setPadding(0, 0, 0, 0);
-//                    bottomSheet.setBackground(getResources().getDrawable(R.drawable.curved_layout));
-//                    coordinatorLayout.setVisibility(View.VISIBLE);
-//
-//                }
             }
         });
 
-
-
+        back_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(String.valueOf(bottomSheetBehavior.getState()).equals("3")){
+                    collapse_bottomSheet(bottomSheetBehavior, bottomSheet);
+                }
+            }
+        });
     }
 
-    private void change_background(int state, View bottomSheet) {
+    @SuppressLint("WrongConstant")
+    private void collapse_bottomSheet(BottomSheetBehavior bottomSheetBehavior, View bottomSheet) {
+        bottomSheetBehavior.setState(4);
 
+        back_btn.setVisibility(View.GONE);
+        bottomSheet.setBackground(getResources().getDrawable(R.drawable.curved_layout));
+        coordinatorLayout.setVisibility(View.VISIBLE);
 
-        if(state == 1){
-
-        }
+        getWindow().setStatusBarColor(getResources().getColor(R.color.colorPrimary));
+        getWindow().getDecorView().setSystemUiVisibility(0);
     }
+
+
+    @SuppressLint("WrongConstant")
+    private void expand_bottomSheet(BottomSheetBehavior bottomSheetBehavior, View bottomSheet) {
+        bottomSheetBehavior.setState(3);
+
+        back_btn.setVisibility(View.VISIBLE);
+        bottomSheet.setBackground(getResources().getDrawable(R.drawable.rectangle_layout));
+        coordinatorLayout.setVisibility(View.GONE);
+
+        getWindow().setStatusBarColor(getResources().getColor(R.color.white));
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+    }
+
 }
