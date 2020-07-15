@@ -7,93 +7,148 @@
     android:background="@color/colorPrimary"
     tools:context=".MainActivity">
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_marginTop="80dp"
-        android:orientation="vertical">
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:layout_marginHorizontal="20dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="left"
+            android:clickable="true"
+            android:contextClickable="true"
+            android:fontFamily="@font/semibold"
+            android:text="Cancel"
+            android:textSize="14sp"
+            android:textColor="@color/white" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="35:12"
-            android:inputType="textImeMultiLine"
+            android:layout_gravity="right"
+            android:fontFamily="@font/semibold"
+            android:gravity="center_horizontal"
+            android:clickable="true"
+            android:contextClickable="true"
+            android:text="Save"
+            android:textSize="14sp"
+            android:textColor="@color/white" />
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_marginTop="40dp"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/up"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="10dp"
+            android:clickable="true"
+            android:padding="10dp"
+            android:src="@drawable/ic_arrow_up"
+            android:tint="@color/white" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:fontFamily="@font/regular"
+            android:text="35:12"
             android:textAlignment="center"
             android:textColor="@color/white"
-            android:fontFamily="@font/regular"
-            android:textFontWeight="10"
-            android:textSize="90sp"/>
+            android:textSize="60sp" />
+
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginHorizontal="130dp"
             android:orientation="horizontal"
-            android:layout_marginHorizontal="100dp"
             android:weightSum="10">
 
             <View
                 android:id="@+id/view1"
                 android:layout_width="wrap_content"
                 android:layout_height="2dp"
-                android:layout_weight="7"
-                android:layout_alignParentRight="true"
                 android:layout_below="@+id/textView1"
+                android:layout_alignParentRight="true"
                 android:layout_marginTop="20dp"
+                android:layout_weight="7"
                 android:background="@color/white" />
+
             <View
                 android:id="@+id/view2"
                 android:layout_width="wrap_content"
                 android:layout_height="2dp"
-                android:layout_weight="3"
-                android:layout_alignParentRight="true"
                 android:layout_below="@+id/textView1"
+                android:layout_alignParentRight="true"
                 android:layout_marginTop="20dp"
+                android:layout_weight="3"
                 android:background="@color/unFocused" />
 
         </LinearLayout>
 
+        <ImageView
+            android:id="@+id/arrow_down"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp"
+            android:clickable="true"
+            android:padding="10dp"
+            android:src="@drawable/ic_arrow_down"
+            android:tint="@color/white" />
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/white"
+            android:layout_gravity="center"
+            android:layout_marginTop="20dp"
             android:fontFamily="@font/semibold"
             android:text="+ 1:00"
-            android:layout_gravity="center"
-            android:layout_marginTop="20dp"
-            android:textSize="20sp"/>
+            android:textColor="@color/white"
+            android:textSize="17sp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="PHYSICS"
             android:layout_gravity="center"
+            android:layout_marginTop="20dp"
+            android:fontFamily="@font/semibold"
+            android:text="PHYSICS"
             android:textAlignment="center"
             android:textColor="@color/white"
-            android:fontFamily="@font/semibold"
-            android:layout_marginTop="20dp"
-            android:textSize="50sp"/>
+            android:textSize="30sp" />
 
     </LinearLayout>
+
     <androidx.core.widget.NestedScrollView
         android:id="@+id/bottomSheet"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/curved_layout"
         android:elevation="16dp"
-        android:clipToPadding="false"
         android:outlineProvider="bounds"
         android:backgroundTint="@color/white"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
         app:behavior_hideable="false"
-        app:behavior_peekHeight="190dp"
+        app:behavior_peekHeight="170dp"
+        android:animateLayoutChanges="true"
         android:orientation="vertical"
-        android:paddingVertical="20dp">
+        android:paddingBottom="20dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="7dp"
+            android:animateLayoutChanges="true"
             android:layout_gravity="center_horizontal"
             android:orientation="vertical">
 
@@ -103,18 +158,29 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="0dp"
                 android:animateLayoutChanges="true"
-                android:visibility="gone"
                 android:orientation="horizontal">
 
                 <ImageView
                     android:id="@+id/back_button"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:src="@drawable/ic_back"
                     android:tint="@color/unFocused_dark"
                     android:paddingHorizontal="20dp"
                     android:clickable="true"
                     android:layout_gravity="top|left"/>
+
+                <View
+                    android:id="@+id/maximize"
+                    android:layout_width="30dp"
+                    android:layout_height="4dp"
+                    android:layout_weight="8"
+                    android:layout_alignParentRight="true"
+                    android:layout_below="@+id/textView1"
+                    android:layout_marginTop="0dp"
+                    android:layout_gravity="center_horizontal"
+                    android:background="@drawable/curved_layout"
+                    android:backgroundTint="@color/unFocused"/>
 
             </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
@@ -123,6 +189,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
+                android:layout_marginTop="20dp"
                 android:layout_gravity="center_horizontal">
 
                 <TextView
@@ -130,7 +197,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/text"
-                    android:textSize="45sp"
+                    android:textSize="30sp"
+                    android:fontFamily="@font/semibold"
                     android:text="1"/>
                 <TextView
                     android:id="@+id/tot_hr_txt"
@@ -138,13 +206,15 @@
                     android:layout_height="wrap_content"
                     android:textColor="@color/text"
                     android:textSize="20sp"
+                    android:fontFamily="@font/semibold"
                     android:text="hr "/>
                 <TextView
                     android:id="@+id/tot_min"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/text"
-                    android:textSize="45sp"
+                    android:textSize="30sp"
+                    android:fontFamily="@font/semibold"
                     android:text="35"/>
                 <TextView
                     android:id="@+id/tot_min_txt"
@@ -152,6 +222,7 @@
                     android:layout_height="wrap_content"
                     android:textColor="@color/text"
                     android:textSize="20sp"
+                    android:fontFamily="@font/semibold"
                     android:text="mins"/>
             </LinearLayout>
 
@@ -159,7 +230,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Today"
-                android:textSize="20sp"
+                android:textSize="17sp"
                 android:layout_gravity="center_horizontal"
                 android:textColor="@color/unFocused_dark"
                 android:fontFamily="@font/semibold"/>
@@ -168,7 +239,6 @@
                 android:id="@+id/app_bar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="20dp"
                 android:animateLayoutChanges="true"
                 android:orientation="horizontal">
 
@@ -176,21 +246,21 @@
                     android:id="@+id/menu_button"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:src="@drawable/ic_menu"
-                    android:tint="@color/unFocused_dark"
-                    android:paddingVertical="10dp"
+                    android:layout_gravity="top|left"
                     android:paddingHorizontal="20dp"
-                    android:layout_gravity="top|left"/>
+                    android:paddingVertical="10dp"
+                    android:src="@drawable/ic_menu"
+                    android:tint="@color/unFocused_dark" />
 
                 <ImageView
                     android:id="@+id/more_btn"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:src="@drawable/ic_more"
-                    android:tint="@color/unFocused_dark"
-                    android:paddingVertical="10dp"
+                    android:layout_gravity="right"
                     android:paddingHorizontal="20dp"
-                    android:layout_gravity="right"/>
+                    android:paddingVertical="10dp"
+                    android:src="@drawable/ic_more"
+                    android:tint="@color/unFocused_dark" />
 
 
             </androidx.coordinatorlayout.widget.CoordinatorLayout>
