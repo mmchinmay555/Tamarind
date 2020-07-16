@@ -129,12 +129,21 @@
 
     </LinearLayout>
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="33dp"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="144dp"
+        android:layout_above="@id/bottomSheet"
+        android:background="@drawable/shadow_top"/>
+
+
+
     <androidx.core.widget.NestedScrollView
         android:id="@+id/bottomSheet"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/curved_layout"
-        android:elevation="26dp"
         android:outlineProvider="bounds"
         android:backgroundTint="@color/white"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
@@ -142,6 +151,7 @@
         app:behavior_peekHeight="170dp"
         android:animateLayoutChanges="true"
         android:orientation="vertical">
+
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -182,7 +192,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:layout_marginTop="20dp"
+                    android:layout_marginTop="40dp"
                     android:layout_gravity="center_horizontal">
 
                     <TextView
@@ -228,37 +238,37 @@
                     android:textColor="@color/unFocused_dark"
                     android:fontFamily="@font/semibold"/>
             </LinearLayout>
-
-            <androidx.coordinatorlayout.widget.CoordinatorLayout
-                android:id="@+id/app_bar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:animateLayoutChanges="true"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:id="@+id/menu_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="top|left"
-                    android:paddingHorizontal="20dp"
-                    android:paddingVertical="10dp"
-                    android:src="@drawable/ic_menu"
-                    android:tint="@color/unFocused_dark" />
-
-                <ImageView
-                    android:id="@+id/more_btn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="right"
-                    android:paddingHorizontal="20dp"
-                    android:paddingVertical="10dp"
-                    android:src="@drawable/ic_more"
-                    android:tint="@color/unFocused_dark" />
-
-
-            </androidx.coordinatorlayout.widget.CoordinatorLayout>
         </LinearLayout>
 
+
     </androidx.core.widget.NestedScrollView>
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/app_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:animateLayoutChanges="true"
+        android:layout_gravity="bottom"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/menu_button"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="top|left"
+            android:padding="20dp"
+            android:src="@drawable/ic_menu"
+            android:tint="@color/unFocused_dark" />
+
+        <ImageView
+            android:id="@+id/more_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="right"
+            android:padding="20dp"
+            android:src="@drawable/ic_more"
+            android:tint="@color/unFocused_dark" />
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -7,6 +7,7 @@ import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -55,8 +56,23 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if(String.valueOf(bottomSheetBehavior.getState()).equals("3")){
+                    v.startAnimation(AnimationUtils.loadAnimation(MainActivity.this, R.anim.on_click));
                     collapse_bottomSheet(bottomSheetBehavior, bottomSheet);
                 }
+            }
+        });
+
+        menu_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                v.startAnimation(AnimationUtils.loadAnimation(MainActivity.this, R.anim.on_click));
+            }
+        });
+
+        more_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                v.startAnimation(AnimationUtils.loadAnimation(MainActivity.this, R.anim.on_click));
             }
         });
     }
