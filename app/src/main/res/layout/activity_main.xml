@@ -69,7 +69,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:fontFamily="@font/regular"
-            android:text="35:12"
+            android:text="50:00"
             android:textAlignment="center"
             android:textColor="@color/white"
             android:textSize="60sp" />
@@ -216,6 +216,7 @@
                         android:textColor="@color/text"
                         android:textSize="28sp"
                         android:fontFamily="@font/semibold"
+                        android:visibility="gone"
                         android:text="1"/>
                     <TextView
                         android:id="@+id/tot_hr_txt"
@@ -223,6 +224,7 @@
                         android:layout_height="wrap_content"
                         android:textColor="@color/text"
                         android:textSize="18sp"
+                        android:visibility="gone"
                         android:fontFamily="@font/semibold"
                         android:text="hr "/>
                     <TextView
@@ -232,7 +234,7 @@
                         android:textColor="@color/text"
                         android:textSize="28sp"
                         android:fontFamily="@font/semibold"
-                        android:text="35"/>
+                        android:text="0"/>
                     <TextView
                         android:id="@+id/tot_min_txt"
                         android:layout_width="wrap_content"
@@ -240,7 +242,7 @@
                         android:textColor="@color/text"
                         android:textSize="18sp"
                         android:fontFamily="@font/semibold"
-                        android:text="mins"/>
+                        android:text="m"/>
                 </LinearLayout>
 
                 <TextView

@@ -1,32 +1,22 @@
 package com.example.tamarind;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.icu.util.Calendar;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.animation.AnimationUtils;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.BarChart;
-import com.github.mikephil.charting.components.AxisBase;
-import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.XAxis;
-import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
-import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
-import com.github.mikephil.charting.formatter.ValueFormatter;
-import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
 import java.util.ArrayList;
@@ -39,7 +29,8 @@ public class MainActivity extends AppCompatActivity {
     androidx.coordinatorlayout.widget.CoordinatorLayout coordinatorLayout, appbar;
     LinearLayout total_time, bottom_layout;
 
-    TextView topLeft_option, topRight_option, topic_btn;
+    TextView topLeft_option, topRight_option;
+    static TextView topic_btn;
     static TextView timer;
 
     BarChart barChart;
@@ -47,11 +38,12 @@ public class MainActivity extends AppCompatActivity {
     BarDataSet barDataSet;
     ArrayList barEntries;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        TimeSetter.seconds = 50 * 60; //50 mins
 
         final View bottomSheet = findViewById(R.id.bottomSheet);
 

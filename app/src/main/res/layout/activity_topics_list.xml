@@ -37,7 +37,7 @@
             android:fontFamily="@font/semibold"
             android:textColor="@color/colorPrimary"
             android:textSize="27sp"
-            android:paddingTop="20dp"
+            android:paddingTop="10dp"
             android:paddingHorizontal="30dp"
             android:paddingBottom="15dp"/>
 
@@ -50,6 +50,13 @@
             android:layout_marginHorizontal="30dp"
             android:background="@color/unFocused" />
 
+        <ListView
+            android:id="@+id/listView_topics"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"/>
+
+
 
     </LinearLayout>
 
@@ -57,6 +64,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
+        android:background="@color/white"
         android:layout_gravity="bottom">
 
         <EditText
