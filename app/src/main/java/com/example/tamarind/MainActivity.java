@@ -241,9 +241,11 @@ public class MainActivity extends AppCompatActivity {
                 if(isBreak){
                     startTimer((int) breakSeconds);
                     Log.i("BReak", "true");
+                    Log.i("timeSetFor", String.valueOf(breakSeconds) + " " + String.valueOf(breakSeconds/60));
                 }else{
                     startTimer((int) seconds);
                     Log.i("BReak", "false");
+                    Log.i("timeSetFor", String.valueOf(seconds) + " " + String.valueOf(seconds/60));
                 }
             }
         });
@@ -456,6 +458,9 @@ public class MainActivity extends AppCompatActivity {
             countDownTimer.onFinish();
 
             totalSeconds_passed = 0;
+
+            seconds = TimeSetter.seconds;
+            breakSeconds = TimeSetter.seconds;
 
         }else{
             seconds = TimeSetter.seconds;

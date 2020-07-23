@@ -25,6 +25,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 
+import static com.example.tamarind.MainActivity.breakSeconds;
 import static com.example.tamarind.MainActivity.isBreak;
 import static com.example.tamarind.MainActivity.seconds;
 import static com.example.tamarind.MainActivity.topics;
@@ -98,9 +99,9 @@ public class TopicsList extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 MainActivity.isBreak = true;
-                seconds = TimeSetter.breakSeconds;
+                MainActivity.breakSeconds = TimeSetter.breakSeconds;
 
-                setTimeText((int) seconds);
+                setTimeText((int) breakSeconds);
 
                 Snackbar.make(newTopic_addText, "Break", Snackbar.LENGTH_SHORT)
                         .setTextColor(getResources().getColor(R.color.white))
