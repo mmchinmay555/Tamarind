@@ -183,14 +183,15 @@ public class MainActivity extends AppCompatActivity {
                     countDownTimer.cancel();
                     countDownTimer.onFinish();
 
-                    seconds = TimeSetter.breakSeconds;
-                    timerTextSet(seconds);
+                    breakSeconds = TimeSetter.breakSeconds;
+                    timerTextSet(breakSeconds);
 
                     topic_btn.setText("Break");
 
                     topLeft_option.setVisibility(View.INVISIBLE);
                     topRight_option.setVisibility(View.VISIBLE);
                     topRight_option.setText("Set Timer");
+
                     isBreak = true;
                 }
 
@@ -267,7 +268,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void startTimer(final int sec) {
         Log.i("BReak", String.valueOf(isBreak));
-//        Log.i("seconds", String.valueOf(sec));
         if(!isBreak){
             //some topic is selected
             Log.i("topicSelectedNew", topicSelected);
@@ -369,14 +369,12 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }.start();
                 timerRunning = 1;
-//            Log.i("timerStart", String.valueOf(TimeSetter.seconds));
-                
             }else if(timerRunning == 1){
                 incrementBy1min.setVisibility(View.INVISIBLE);
                 countDownTimer.cancel();
 
                 timerRunning = 0;
-//            Log.i("timerCancel", String.valueOf(TimeSetter.seconds));
+
                 if(!isBreak){
                     topRight_option.setText("Save");
                     topLeft_option.setText("Cancel");
@@ -409,9 +407,6 @@ public class MainActivity extends AppCompatActivity {
     private void timerTextSet(long seconds) {
         int hrs = (int) ((seconds % 86400 ) / 3600);
         int mins = (int) (((seconds % 86400 ) % 3600 ) / 60);
-
-//                    Log.i("onClick_hr", String.valueOf(hrs));
-//                    Log.i("onClick_min", String.valueOf(mins));
 
         if(hrs == 0 && mins == 0){
             MainActivity.timerHr.setVisibility(View.GONE);
@@ -571,5 +566,4 @@ public class MainActivity extends AppCompatActivity {
         barChart.getXAxis().setValueFormatter(new IndexAxisValueFormatter(xAxisLables));
         barChart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
     }
-
 }
