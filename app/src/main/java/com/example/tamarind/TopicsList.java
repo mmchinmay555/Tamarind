@@ -13,8 +13,11 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.BaseTransientBottomBar;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -22,14 +25,18 @@ import java.lang.reflect.Type;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 
+import static com.example.tamarind.MainActivity.isBreak;
+import static com.example.tamarind.MainActivity.seconds;
+import static com.example.tamarind.MainActivity.topics;
+
 public class TopicsList extends AppCompatActivity {
     public static String selectedTopic;
     ImageView back_btn;
     FloatingActionButton addText_btn;
     EditText newTopic_addText;
     ListView listView_topics;
+    TextView breakTime;
 
-    static ArrayList<topic_item> topics;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +50,7 @@ public class TopicsList extends AppCompatActivity {
         addText_btn = findViewById(R.id.addText_btn);
         newTopic_addText = findViewById(R.id.newTopic_addText);
         listView_topics = (ListView) findViewById(R.id.listView_topics);
+        breakTime = findViewById(R.id.breakTime);
 
         loadTopics();
         initalizeAdapter();
@@ -52,8 +60,22 @@ public class TopicsList extends AppCompatActivity {
         back_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                MainActivity.topic_btn.setText(selectedTopic);
-                finish();
+                if((topics.size() > 0 && !selectedTopic.equals("null")) || isBreak){
+                    if(isBreak){
+                        MainActivity.topic_btn.setText("Break");
+                        MainActivity.topic_btn.setVisibility(View.VISIBLE);
+                    }else{
+                        MainActivity.topic_btn.setText(selectedTopic);
+                        MainActivity.topicSelected = selectedTopic;
+                        MainActivity.topic_btn.setVisibility(View.VISIBLE);
+                    }
+                    finish();
+                }else{
+                    Snackbar.make(newTopic_addText, "Topic can't be empty", Snackbar.LENGTH_SHORT)
+                            .setTextColor(getResources().getColor(R.color.white))
+                            .setAnimationMode(BaseTransientBottomBar.ANIMATION_MODE_SLIDE)
+                            .show();
+                }
             }
         });
 
@@ -69,6 +91,21 @@ public class TopicsList extends AppCompatActivity {
                     Log.i("newTopic", newTopic_addText.getText().toString());
                     newTopic_addText.setText("");
                 }
+            }
+        });
+
+        breakTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MainActivity.isBreak = true;
+                seconds = TimeSetter.breakSeconds;
+
+                setTimeText((int) seconds);
+
+                Snackbar.make(newTopic_addText, "Break", Snackbar.LENGTH_SHORT)
+                        .setTextColor(getResources().getColor(R.color.white))
+                        .setAnimationMode(BaseTransientBottomBar.ANIMATION_MODE_SLIDE)
+                        .show();
             }
         });
     }
@@ -107,4 +144,48 @@ public class TopicsList extends AppCompatActivity {
         listView_topics.setDivider(null);
     }
 
+    private void setTimeText(int s) {
+        int hrs = (int) ((s % 86400 ) / 3600);
+        int mins = (int) (((s % 86400 ) % 3600 ) / 60);
+
+//                    Log.i("onClick_hr", String.valueOf(hrs));
+//                    Log.i("onClick_min", String.valueOf(mins));
+
+        if(hrs == 0 && mins == 0){
+            MainActivity.timerHr.setVisibility(View.GONE);
+            MainActivity.colonM.setVisibility(View.GONE);
+            MainActivity.timerMin.setVisibility(View.VISIBLE);
+            MainActivity.colonS.setVisibility(View.VISIBLE);
+            MainActivity.timerSec.setVisibility(View.VISIBLE);
+            MainActivity.timerMin.setText("50");
+            MainActivity.timerSec.setText("00");
+        }else if(hrs == 0 && mins != 0){
+            MainActivity.timerHr.setVisibility(View.GONE);
+            MainActivity.colonM.setVisibility(View.GONE);
+            MainActivity.timerMin.setVisibility(View.VISIBLE);
+            MainActivity.colonS.setVisibility(View.VISIBLE);
+            MainActivity.timerSec.setVisibility(View.VISIBLE);
+            MainActivity.timerMin.setText(String.valueOf(mins));
+            MainActivity.timerSec.setText("00");
+
+        }else if(hrs != 0 && mins < 10){
+            MainActivity.timerHr.setVisibility(View.VISIBLE);
+            MainActivity.colonM.setVisibility(View.VISIBLE);
+            MainActivity.timerMin.setVisibility(View.VISIBLE);
+            MainActivity.colonS.setVisibility(View.VISIBLE);
+            MainActivity.timerSec.setVisibility(View.VISIBLE);
+            MainActivity.timerHr.setText(String.valueOf(hrs));
+            MainActivity.timerMin.setText("0" + String.valueOf(mins));
+            MainActivity.timerSec.setText("00");
+        }else if(hrs != 0 && mins >= 10){
+            MainActivity.timerHr.setVisibility(View.VISIBLE);
+            MainActivity.colonM.setVisibility(View.VISIBLE);
+            MainActivity.timerMin.setVisibility(View.VISIBLE);
+            MainActivity.colonS.setVisibility(View.VISIBLE);
+            MainActivity.timerSec.setVisibility(View.VISIBLE);
+            MainActivity.timerHr.setText(String.valueOf(hrs));
+            MainActivity.timerMin.setText(String.valueOf(mins));
+            MainActivity.timerSec.setText("00");
+        }
+    }
 }

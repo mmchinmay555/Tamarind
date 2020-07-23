@@ -20,6 +20,7 @@ public class TimeSetter extends AppCompatActivity {
     TextView setTime_btn;
 
     static int seconds;
+    static int breakSeconds;
     int timeSet_status;
 
     FloatingActionButton clear;
@@ -89,28 +90,73 @@ public class TimeSetter extends AppCompatActivity {
         setTime_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                seconds = get_seconds();
+                if(!MainActivity.isBreak){
+                    if(get_seconds() > 59){
+                        seconds = get_seconds();
+                    }else{
+                        finish();
+                    }
+                }else{
+                    if(get_seconds() > 59){
+                        breakSeconds = get_seconds();
+                    }else{
+                        finish();
+                    }
+                }
 
-                if(seconds < 10800){
+                if(get_seconds() == 0){
+                    finish();
+                }
+
+                if(get_seconds() < 10800){
                     //only time less than 3hr is valid
 
-                    int hrs = (seconds % 86400 ) / 3600;
-                    int mins = ((seconds % 86400 ) % 3600 ) / 60;
+                    int hrs = (get_seconds() % 86400 ) / 3600;
+                    int mins = ((get_seconds() % 86400 ) % 3600 ) / 60;
 
-                    Log.i("onClick_hr", String.valueOf(hrs));
-                    Log.i("onClick_min", String.valueOf(mins));
+//                    Log.i("onClick_hr", String.valueOf(hrs));
+//                    Log.i("onClick_min", String.valueOf(mins));
 
                     if(hrs == 0 && mins == 0){
-                        MainActivity.timer.setText("50:00");
+                        MainActivity.timerHr.setVisibility(View.GONE);
+                        MainActivity.colonM.setVisibility(View.GONE);
+                        MainActivity.timerMin.setVisibility(View.VISIBLE);
+                        MainActivity.colonS.setVisibility(View.VISIBLE);
+                        MainActivity.timerSec.setVisibility(View.VISIBLE);
                     }else if(hrs == 0 && mins != 0){
-                        MainActivity.timer.setText(mins + ":" + "00");
+                        MainActivity.timerHr.setVisibility(View.GONE);
+                        MainActivity.colonM.setVisibility(View.GONE);
+                        MainActivity.timerMin.setVisibility(View.VISIBLE);
+                        MainActivity.colonS.setVisibility(View.VISIBLE);
+                        MainActivity.timerSec.setVisibility(View.VISIBLE);
+                        MainActivity.timerMin.setText(String.valueOf(mins));
+                        MainActivity.timerSec.setText("00");
 
                     }else if(hrs != 0 && mins < 10){
-                        MainActivity.timer.setText(hrs + ":" + mins + "0" + ":" + "00");
+                        MainActivity.timerHr.setVisibility(View.VISIBLE);
+                        MainActivity.colonM.setVisibility(View.VISIBLE);
+                        MainActivity.timerMin.setVisibility(View.VISIBLE);
+                        MainActivity.colonS.setVisibility(View.VISIBLE);
+                        MainActivity.timerSec.setVisibility(View.VISIBLE);
+                        MainActivity.timerHr.setText(String.valueOf(hrs));
+                        MainActivity.timerMin.setText("0" + String.valueOf(mins));
+                        MainActivity.timerSec.setText("00");
                     }else if(hrs != 0 && mins >= 10){
-                        MainActivity.timer.setText(hrs + ":" + mins + ":" + "00");
+                        MainActivity.timerHr.setVisibility(View.VISIBLE);
+                        MainActivity.colonM.setVisibility(View.VISIBLE);
+                        MainActivity.timerMin.setVisibility(View.VISIBLE);
+                        MainActivity.colonS.setVisibility(View.VISIBLE);
+                        MainActivity.timerSec.setVisibility(View.VISIBLE);
+                        MainActivity.timerHr.setText(String.valueOf(hrs));
+                        MainActivity.timerMin.setText(String.valueOf(mins));
+                        MainActivity.timerSec.setText("00");
                     }
 
+                    if(MainActivity.isBreak){
+                        MainActivity.breakSeconds = breakSeconds;
+                    }else{
+                        MainActivity.seconds = seconds;
+                    }
                     finish();
                 }else{
                     show_snackbar("It is not safe over 3 hrs", zero);
@@ -132,13 +178,13 @@ public class TimeSetter extends AppCompatActivity {
         int hr_ones = Integer.parseInt(hour_ones.getText().toString()) * 60 * 60;
 
         int sec = min_ones + min_tenth + hr_ones;
-        Log.i("get_seconds", String.valueOf(sec));
+//        Log.i("get_seconds", String.valueOf(sec));
 
         return sec;
     }
 
     public void On_num_Clicked(View view) {
-        Log.i("numClicked", view.getTag().toString());
+//        Log.i("numClicked", view.getTag().toString());
 
         if(timeSet_status == 0){
             minute_ones.setText(view.getTag().toString());
