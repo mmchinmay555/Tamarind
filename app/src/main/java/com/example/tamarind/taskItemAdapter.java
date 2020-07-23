@@ -32,8 +32,6 @@ public class taskItemAdapter extends ArrayAdapter<topic_item> {
         super(context, 0, resource);
     }
 
-    int previousSelected = -1;
-
     @NonNull
     @Override
     public View getView(final int position, @Nullable View convertView, @NonNull final ViewGroup parent) {
@@ -60,22 +58,8 @@ public class taskItemAdapter extends ArrayAdapter<topic_item> {
                         .setTextColor(getContext().getResources().getColor(R.color.white))
                         .setAnimationMode(BaseTransientBottomBar.ANIMATION_MODE_SLIDE)
                         .show();
-
-
             }
         });
-
-//        topicName.setOnLongClickListener(new View.OnLongClickListener() {
-//            @Override
-//            public boolean onLongClick(View v) {
-//
-//                remove(item);
-//                notifyDataSetChanged();
-//
-//                return true;
-//            }
-//        });
-
 
         return convertView;
     }
@@ -83,9 +67,6 @@ public class taskItemAdapter extends ArrayAdapter<topic_item> {
     private void setTimeText(int s) {
         int hrs = (int) ((s % 86400 ) / 3600);
         int mins = (int) (((s % 86400 ) % 3600 ) / 60);
-
-//                    Log.i("onClick_hr", String.valueOf(hrs));
-//                    Log.i("onClick_min", String.valueOf(mins));
 
         if(hrs == 0 && mins == 0){
             MainActivity.timerHr.setVisibility(View.GONE);

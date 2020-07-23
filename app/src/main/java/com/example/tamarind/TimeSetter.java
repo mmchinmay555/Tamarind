@@ -55,7 +55,6 @@ public class TimeSetter extends AppCompatActivity {
         minute_ones = findViewById(R.id.minute_ones);
         minute_tenth = findViewById(R.id.minute_tenth);
 
-
         back_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -113,9 +112,6 @@ public class TimeSetter extends AppCompatActivity {
 
                     int hrs = (get_seconds() % 86400 ) / 3600;
                     int mins = ((get_seconds() % 86400 ) % 3600 ) / 60;
-
-//                    Log.i("onClick_hr", String.valueOf(hrs));
-//                    Log.i("onClick_min", String.valueOf(mins));
 
                     if(hrs == 0 && mins == 0){
                         MainActivity.timerHr.setVisibility(View.GONE);
@@ -178,14 +174,10 @@ public class TimeSetter extends AppCompatActivity {
         int hr_ones = Integer.parseInt(hour_ones.getText().toString()) * 60 * 60;
 
         int sec = min_ones + min_tenth + hr_ones;
-//        Log.i("get_seconds", String.valueOf(sec));
-
         return sec;
     }
 
     public void On_num_Clicked(View view) {
-//        Log.i("numClicked", view.getTag().toString());
-
         if(timeSet_status == 0){
             minute_ones.setText(view.getTag().toString());
 

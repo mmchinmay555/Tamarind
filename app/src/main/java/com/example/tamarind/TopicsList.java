@@ -149,9 +149,6 @@ public class TopicsList extends AppCompatActivity {
         int hrs = (int) ((s % 86400 ) / 3600);
         int mins = (int) (((s % 86400 ) % 3600 ) / 60);
 
-//                    Log.i("onClick_hr", String.valueOf(hrs));
-//                    Log.i("onClick_min", String.valueOf(mins));
-
         if(hrs == 0 && mins == 0){
             MainActivity.timerHr.setVisibility(View.GONE);
             MainActivity.colonM.setVisibility(View.GONE);

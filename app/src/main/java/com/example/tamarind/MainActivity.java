@@ -41,22 +41,21 @@ public class MainActivity extends AppCompatActivity {
     LinearLayout total_time, bottom_layout;
 
     TextView topLeft_option, topRight_option;
-    static TextView topic_btn;
-    static TextView timerHr, timerMin, timerSec;
-    static TextView colonM, colonS;
-
-
     TextView incrementBy1min;
+    LinearLayout timer;
 
     BarChart barChart;
     BarData barData;
     BarDataSet barDataSet;
     ArrayList barEntries;
-    CountDownTimer countDownTimer = null;
-    LinearLayout timer;
+
+    static TextView topic_btn;
+    static TextView timerHr, timerMin, timerSec;
+    static TextView colonM, colonS;
 
     static Boolean isBreak;
 
+    CountDownTimer countDownTimer = null;
     static long seconds;
     static long breakSeconds;
     static ArrayList<topic_item> topics;
@@ -66,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        TimeSetter.seconds = 50 * 60; //50 mins
+        TimeSetter.seconds = 50 * 60;
         TimeSetter.breakSeconds = 4 * 60;
 
         seconds = TimeSetter.seconds;
@@ -102,10 +101,10 @@ public class MainActivity extends AppCompatActivity {
         isBreak = false;
         topicSelected = "";
 
-
         bottomSheetBehavior.setDraggable(false);
 
         getTopicSelectedFromSharedPrefs();
+
         if(topicSelected.isEmpty()){
             topic_btn.setVisibility(View.INVISIBLE);
             Log.i("topicSelected", "null");
@@ -114,7 +113,6 @@ public class MainActivity extends AppCompatActivity {
             topic_btn.setVisibility(View.VISIBLE);
             Log.i("topicSelected 115", topicSelected);
         }
-
 
         bottom_layout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -176,7 +174,6 @@ public class MainActivity extends AppCompatActivity {
                     topRight_option.setVisibility(View.VISIBLE);
                     topRight_option.setText("Set Timer");
 
-
                 }else if(topRight_option.getText().toString().equals("Set Timer")){
                     setTimer();
                 }else if(topRight_option.getText().toString().equals("Reset")){
@@ -228,8 +225,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 seconds = seconds + 61;
-
-
                 countDownTimer.cancel();
                 timerRunning = 0;
                 startTimer((int) seconds);
@@ -299,6 +294,7 @@ public class MainActivity extends AppCompatActivity {
                             timerSec.setVisibility(View.VISIBLE);
 
                             timerMin.setText("0");
+
                         }else if(h == 0 && m != 0){
                             timerHr.setVisibility(View.GONE);
                             colonM.setVisibility(View.GONE);
@@ -317,6 +313,7 @@ public class MainActivity extends AppCompatActivity {
 
                             timerHr.setText(String.valueOf(h));
                             timerMin.setText("0" + String.valueOf(m));
+
                         }else if(h != 0 && m >= 10){
                             timerHr.setVisibility(View.VISIBLE);
                             colonM.setVisibility(View.VISIBLE);
