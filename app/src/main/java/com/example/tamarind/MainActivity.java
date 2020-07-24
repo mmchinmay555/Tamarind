@@ -1,19 +1,22 @@
 package com.example.tamarind;
 
-import androidx.appcompat.app.AlertDialog;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.icu.util.Calendar;
+import android.media.TimedText;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ShareActionProvider;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.BarChart;
@@ -24,7 +27,6 @@ import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
-import java.sql.Time;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
@@ -60,19 +62,13 @@ public class MainActivity extends AppCompatActivity {
     static long breakSeconds;
     static ArrayList<topic_item> topics;
 
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        TimeSetter.seconds = 50 * 60;
-        TimeSetter.breakSeconds = 4 * 60;
-
-        seconds = TimeSetter.seconds;
-        breakSeconds = TimeSetter.breakSeconds;
-        totalSeconds_passed = 0;
-
-        timerRunning = 0;
         final View bottomSheet = findViewById(R.id.bottomSheet);
 
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
@@ -95,23 +91,62 @@ public class MainActivity extends AppCompatActivity {
         colonS = findViewById(R.id.timerColonS);
         incrementBy1min = findViewById(R.id.incrementBy1min);
 
+        TimeSetter.seconds = 50 * 60;
+        TimeSetter.breakSeconds = 4 * 60;
+
+        seconds = TimeSetter.seconds;
+        breakSeconds = TimeSetter.breakSeconds;
+        totalSeconds_passed = 0;
+
+        Log.i("secondsLeft", String.valueOf(getMillisLeftInSharedPrefs()));
+        Log.i("timerRunning", String.valueOf(getTimerState()));
+        Log.i("BreakState", String.valueOf(getBreakState()));
+        Log.i("timePassed", String.valueOf(getTimePassed()));
+        Log.i("endTimeInMillis", String.valueOf(getEndTimeInMillis()));
+
+        isBreak = getBreakState();
         back_btn.setVisibility(View.GONE);
         incrementBy1min.setVisibility(View.INVISIBLE);
         barChart.setVisibility(View.GONE);
-        isBreak = false;
+
         topicSelected = "";
 
         bottomSheetBehavior.setDraggable(false);
-
         getTopicSelectedFromSharedPrefs();
 
         if(topicSelected.isEmpty()){
             topic_btn.setVisibility(View.INVISIBLE);
             Log.i("topicSelected", "null");
         }else{
-            topic_btn.setText(topicSelected);
+            if(!isBreak) {
+                topic_btn.setText(topicSelected);
+            }else{
+                topic_btn.setText("Break");
+            }
+
             topic_btn.setVisibility(View.VISIBLE);
             Log.i("topicSelected 115", topicSelected);
+        }
+
+        timerRunning = 0;
+        if(getTimerState() == 1) {
+            Calendar calendar = Calendar.getInstance();
+            long currTimeInMillis = calendar.getTimeInMillis();
+
+            long secondsLeft = (getEndTimeInMillis() - currTimeInMillis) / 1000;
+            startTimer((int) secondsLeft);
+            totalSeconds_passed = getTimePassed();
+        }else{
+            long secondsLeft = getMillisLeftInSharedPrefs();
+            Log.i("SecondsLeft", String.valueOf(secondsLeft));
+            if(isBreak){
+                breakSeconds = secondsLeft;
+            }else{
+                seconds = secondsLeft;
+            }
+
+            timerTextSet(secondsLeft);
+            totalSeconds_passed = getTimePassed();
         }
 
         bottom_layout.setOnClickListener(new View.OnClickListener() {
@@ -259,8 +294,6 @@ public class MainActivity extends AppCompatActivity {
         days.add("Sun");
     }
 
-
-
     private void startTimer(final int sec) {
         Log.i("BReak", String.valueOf(isBreak));
         if(!isBreak){
@@ -278,7 +311,10 @@ public class MainActivity extends AppCompatActivity {
                 topRight_option.setVisibility(View.INVISIBLE);
                 topLeft_option.setVisibility(View.INVISIBLE);
 
+                storeBreakState(isBreak);
+
                 countDownTimer = new CountDownTimer(sec * 1000, 1000) {
+                    @RequiresApi(api = Build.VERSION_CODES.N)
                     @Override
                     public void onTick(long millisUntilFinished) {
                         long s = millisUntilFinished / 1000 % 60;
@@ -335,7 +371,13 @@ public class MainActivity extends AppCompatActivity {
                         breakSeconds = (int) (millisUntilFinished/1000);
                         if(!isBreak){
                             totalSeconds_passed += 1;
+                            storeTimePassed(totalSeconds_passed);
+                            storeMillisLeftInSharedPrefs(seconds);
+                        }else{
+                            storeMillisLeftInSharedPrefs(breakSeconds);
                         }
+
+                        storeEndTimeInMillis(millisUntilFinished);
                     }
 
                     @Override
@@ -344,6 +386,8 @@ public class MainActivity extends AppCompatActivity {
                         timerTextSet(seconds);
 
                         timerRunning = 0;
+                        storeTimerState(timerRunning);
+
 
                         if(!isBreak){
                             topRight_option.setVisibility(View.VISIBLE);
@@ -366,11 +410,14 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }.start();
                 timerRunning = 1;
+
+                storeTimerState(timerRunning);
             }else if(timerRunning == 1){
                 incrementBy1min.setVisibility(View.INVISIBLE);
                 countDownTimer.cancel();
 
                 timerRunning = 0;
+                storeTimerState(timerRunning);
 
                 if(!isBreak){
                     topRight_option.setText("Save");
@@ -385,6 +432,84 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }
+    }
+
+    private void storeTimePassed(long totalSeconds_passed) {
+        SharedPreferences sharedPreferences = getSharedPreferences("totalTimePassed", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        editor.putLong("timePassed", totalSeconds_passed);
+        editor.apply();
+    }
+
+    private long getTimePassed() {
+        SharedPreferences sharedPreferences = getSharedPreferences("totalTimePassed", MODE_PRIVATE);
+
+        long timePassed = sharedPreferences.getLong("timePassed", 0);
+        return timePassed;
+    }
+
+    private void storeBreakState(Boolean isBreak) {
+        SharedPreferences sharedPreferences = getSharedPreferences("breakState", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        editor.putBoolean("isBreak", isBreak);
+        editor.apply();
+    }
+
+    private Boolean getBreakState() {
+        SharedPreferences sharedPreferences = getSharedPreferences("breakState", MODE_PRIVATE);
+        Boolean isBreak = sharedPreferences.getBoolean("isBreak", false);
+
+        return isBreak;
+    }
+
+    private void storeTimerState(long timerRunning) {
+        SharedPreferences sharedPreferences = getSharedPreferences("timerState", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        editor.putLong("timerState", timerRunning);
+        editor.apply();
+    }
+
+    private long getTimerState() {
+        SharedPreferences sharedPreferences = getSharedPreferences("timerState", MODE_PRIVATE);
+
+        long timerState = sharedPreferences.getLong("timerState", 0);
+        return timerState;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private void storeEndTimeInMillis(long millisLeft) {
+        SharedPreferences sharedPreferences = getSharedPreferences("endTimeInMillis", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        Calendar calendar = Calendar.getInstance();
+        long currentTimeInMillis = calendar.getTimeInMillis();
+
+        editor.putLong("endTimeInMIllis", currentTimeInMillis + millisLeft);
+        editor.apply();
+    }
+
+    private long getEndTimeInMillis() {
+        SharedPreferences sharedPreferences = getSharedPreferences("endTimeInMillis", MODE_PRIVATE);
+        long endTimeInMilllis = sharedPreferences.getLong("endTimeInMIllis", 0);
+
+        return endTimeInMilllis;
+    }
+    private void storeMillisLeftInSharedPrefs(long seconds) {
+        SharedPreferences sharedPreferences = getSharedPreferences("millisLeft", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        editor.putLong("millisLeft", seconds);
+        editor.apply();
+    }
+
+    private long getMillisLeftInSharedPrefs(){
+        SharedPreferences sharedPreferences = getSharedPreferences("millisLeft", MODE_PRIVATE);
+        long millisLeft = sharedPreferences.getLong("millisLeft", 0);
+
+        return millisLeft;
     }
 
     private void saveTopicInSharedPrefs() {
@@ -404,6 +529,7 @@ public class MainActivity extends AppCompatActivity {
     private void timerTextSet(long seconds) {
         int hrs = (int) ((seconds % 86400 ) / 3600);
         int mins = (int) (((seconds % 86400 ) % 3600 ) / 60);
+        int sec = (int) (seconds % 60);
 
         if(hrs == 0 && mins == 0){
             MainActivity.timerHr.setVisibility(View.GONE);
@@ -412,7 +538,6 @@ public class MainActivity extends AppCompatActivity {
             MainActivity.colonS.setVisibility(View.VISIBLE);
             MainActivity.timerSec.setVisibility(View.VISIBLE);
             MainActivity.timerMin.setText("50");
-            MainActivity.timerSec.setText("00");
         }else if(hrs == 0 && mins != 0){
             MainActivity.timerHr.setVisibility(View.GONE);
             MainActivity.colonM.setVisibility(View.GONE);
@@ -420,7 +545,6 @@ public class MainActivity extends AppCompatActivity {
             MainActivity.colonS.setVisibility(View.VISIBLE);
             MainActivity.timerSec.setVisibility(View.VISIBLE);
             MainActivity.timerMin.setText(String.valueOf(mins));
-            MainActivity.timerSec.setText("00");
 
         }else if(hrs != 0 && mins < 10){
             MainActivity.timerHr.setVisibility(View.VISIBLE);
@@ -430,7 +554,6 @@ public class MainActivity extends AppCompatActivity {
             MainActivity.timerSec.setVisibility(View.VISIBLE);
             MainActivity.timerHr.setText(String.valueOf(hrs));
             MainActivity.timerMin.setText("0" + String.valueOf(mins));
-            MainActivity.timerSec.setText("00");
         }else if(hrs != 0 && mins >= 10){
             MainActivity.timerHr.setVisibility(View.VISIBLE);
             MainActivity.colonM.setVisibility(View.VISIBLE);
@@ -439,7 +562,11 @@ public class MainActivity extends AppCompatActivity {
             MainActivity.timerSec.setVisibility(View.VISIBLE);
             MainActivity.timerHr.setText(String.valueOf(hrs));
             MainActivity.timerMin.setText(String.valueOf(mins));
-            MainActivity.timerSec.setText("00");
+        }
+        if(sec < 10){
+            MainActivity.timerSec.setText("0" + String.valueOf(sec));
+        }else{
+            MainActivity.timerSec.setText(String.valueOf(sec));
         }
     }
 
@@ -450,6 +577,8 @@ public class MainActivity extends AppCompatActivity {
             countDownTimer.onFinish();
 
             totalSeconds_passed = 0;
+            storeTimePassed(totalSeconds_passed);
+
 
             seconds = TimeSetter.seconds;
             breakSeconds = TimeSetter.seconds;
@@ -458,6 +587,10 @@ public class MainActivity extends AppCompatActivity {
             seconds = TimeSetter.seconds;
             timerTextSet(seconds);
         }
+
+        storeBreakState(isBreak);
+        storeMillisLeftInSharedPrefs(0);
+        storeTimerState(0);
     }
 
     private void setTimer() {
@@ -467,8 +600,8 @@ public class MainActivity extends AppCompatActivity {
     private void cancel_time() {
         if(isBreak){
             isBreak = false;
-            if(!TopicsList.selectedTopic.equals("null")){
-                topic_btn.setText(TopicsList.selectedTopic);
+            if(!topicSelected.equals("null")){
+                topic_btn.setText(topicSelected);
             }else{
                 startActivity(new Intent(MainActivity.this, TopicsList.class));
             }
@@ -477,7 +610,11 @@ public class MainActivity extends AppCompatActivity {
         countDownTimer.onFinish();
 
         totalSeconds_passed = 0;
+        storeTimePassed(totalSeconds_passed);
 
+        storeBreakState(isBreak);
+        storeMillisLeftInSharedPrefs(0);
+        storeTimerState(0);
     }
 
     private void initialize_bar() {
