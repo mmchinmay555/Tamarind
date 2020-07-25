@@ -125,6 +125,7 @@ public class MainActivity extends AppCompatActivity {
             if(getMillisLeftInSharedPrefs() > 0){
                 timerTextSet(getMillisLeftInSharedPrefs());
                 breakSeconds = getMillisLeftInSharedPrefs();
+                timerTextSet(getMillisLeftInSharedPrefs());
             }
         }else{
             if(!isBreak) {
@@ -135,6 +136,12 @@ public class MainActivity extends AppCompatActivity {
 
             topic_btn.setVisibility(View.VISIBLE);
             Log.i("topicSelected 115", topicSelected);
+
+            if(topicSelected.toString().equals("Break")) {
+                timerTextSet(getMillisLeftInSharedPrefs());
+                isBreak = true;
+                breakSeconds = getMillisLeftInSharedPrefs();
+            }
         }
 
         timerRunning = 0;
@@ -267,6 +274,10 @@ public class MainActivity extends AppCompatActivity {
                     topRight_option.setText("Set Timer");
 
                     isBreak = true;
+
+                    storeBreakState(isBreak);
+                    storeMillisLeftInSharedPrefs(TimeSetter.breakSeconds);
+                    storeTimePassed(0);
                 }
 
             }
@@ -275,9 +286,7 @@ public class MainActivity extends AppCompatActivity {
         topic_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(timerRunning == 1){
-
-                }else if(timerRunning == 0){
+                if(timerRunning == 0){
                     if(countDownTimer != null){
                         save_time();
                     }
@@ -294,6 +303,8 @@ public class MainActivity extends AppCompatActivity {
                     getTopicSelectedFromSharedPrefs();
 
                     Log.i("topicSelectedTopicBtn", topicSelected);
+
+
                 }
             }
         });
@@ -573,14 +584,23 @@ public class MainActivity extends AppCompatActivity {
         int mins = (int) (((seconds % 86400 ) % 3600 ) / 60);
         int sec = (int) (seconds % 60);
 
-        if(hrs == 0 && mins == 0){
+        if(hrs == 0 && mins == 0 && sec == 0){
             MainActivity.timerHr.setVisibility(View.GONE);
             MainActivity.colonM.setVisibility(View.GONE);
             MainActivity.timerMin.setVisibility(View.VISIBLE);
             MainActivity.colonS.setVisibility(View.VISIBLE);
             MainActivity.timerSec.setVisibility(View.VISIBLE);
             MainActivity.timerMin.setText("50");
-        }else if(hrs == 0 && mins != 0){
+        }else if(hrs == 0 && mins == 0 && sec != 0){
+            MainActivity.timerHr.setVisibility(View.GONE);
+            MainActivity.colonM.setVisibility(View.GONE);
+            MainActivity.timerMin.setVisibility(View.VISIBLE);
+            MainActivity.colonS.setVisibility(View.VISIBLE);
+            MainActivity.timerSec.setVisibility(View.VISIBLE);
+            MainActivity.timerMin.setText(String.valueOf(mins));
+            MainActivity.timerSec.setText(String.valueOf(sec));
+        }
+        else if(hrs == 0 && mins != 0){
             MainActivity.timerHr.setVisibility(View.GONE);
             MainActivity.colonM.setVisibility(View.GONE);
             MainActivity.timerMin.setVisibility(View.VISIBLE);
@@ -605,6 +625,7 @@ public class MainActivity extends AppCompatActivity {
             MainActivity.timerHr.setText(String.valueOf(hrs));
             MainActivity.timerMin.setText(String.valueOf(mins));
         }
+
         if(sec < 10){
             MainActivity.timerSec.setText("0" + String.valueOf(sec));
         }else{
@@ -642,10 +663,15 @@ public class MainActivity extends AppCompatActivity {
     private void cancel_time() {
         if(isBreak){
             isBreak = false;
-            if(!topicSelected.equals("null")){
+            if(!topicSelected.equals("null") && !topicSelected.equals("Break")){
                 topic_btn.setText(topicSelected);
             }else{
                 startActivity(new Intent(MainActivity.this, TopicsList.class));
+            }
+
+            if(topicSelected.equals("Break")) {
+                //there are no other topics initialised
+                isBreak = true; //as default
             }
         }
         countDownTimer.cancel();
@@ -655,7 +681,14 @@ public class MainActivity extends AppCompatActivity {
         storeTimePassed(totalSeconds_passed);
 
         storeBreakState(isBreak);
-        storeMillisLeftInSharedPrefs(0);
+
+        if(isBreak) {
+
+            storeMillisLeftInSharedPrefs(TimeSetter.breakSeconds);
+        }else {
+            storeMillisLeftInSharedPrefs(TimeSetter.seconds);
+        }
+
         storeTimerState(0);
     }
 
