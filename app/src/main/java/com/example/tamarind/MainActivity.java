@@ -34,8 +34,8 @@ public class MainActivity extends AppCompatActivity {
     private BottomSheetBehavior bottomSheetBehavior;
     ImageView menu_btn, more_btn, back_btn;
 
-    long timerRunning;
-    long totalSeconds_passed;
+    public long timerRunning;
+    public long totalSeconds_passed;
 
     static String topicSelected;
 
@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -115,8 +115,17 @@ public class MainActivity extends AppCompatActivity {
         getTopicSelectedFromSharedPrefs();
 
         if(topicSelected.isEmpty()){
-            topic_btn.setVisibility(View.INVISIBLE);
+            topic_btn.setVisibility(View.VISIBLE);
             Log.i("topicSelected", "null");
+            topicSelected = "Break";
+            topic_btn.setText(topicSelected);
+            timerTextSet(4 * 60);
+            isBreak = true;
+
+            if(getMillisLeftInSharedPrefs() > 0){
+                timerTextSet(getMillisLeftInSharedPrefs());
+                breakSeconds = getMillisLeftInSharedPrefs();
+            }
         }else{
             if(!isBreak) {
                 topic_btn.setText(topicSelected);
@@ -130,13 +139,42 @@ public class MainActivity extends AppCompatActivity {
 
         timerRunning = 0;
         if(getTimerState() == 1) {
+            //running
             Calendar calendar = Calendar.getInstance();
             long currTimeInMillis = calendar.getTimeInMillis();
 
             long secondsLeft = (getEndTimeInMillis() - currTimeInMillis) / 1000;
-            startTimer((int) secondsLeft);
             totalSeconds_passed = getTimePassed();
-        }else{
+
+            Log.i("secondsLeft", String.valueOf(secondsLeft));
+
+            if(secondsLeft < 1){
+                //running....ended
+                timerRunning = 0;
+                startTimer(0);
+                startTimer(0);
+                Log.i("BreakState", String.valueOf(getBreakState()));
+                incrementBy1min.setVisibility(View.INVISIBLE);
+                storeTimerState(timerRunning);
+                totalSeconds_passed = getTimePassed() + getMillisLeftInSharedPrefs();
+                Log.i("totalSeconds_passsed", String.valueOf(totalSeconds_passed));
+                if(!isBreak){
+                    topRight_option.setText("Save");
+                    topLeft_option.setText("Cancel");
+                    topLeft_option.setVisibility(View.VISIBLE);
+                    topRight_option.setVisibility(View.VISIBLE);
+                }else{
+                    topRight_option.setText("Reset");
+                    topLeft_option.setText("Cancel");
+                    topLeft_option.setVisibility(View.VISIBLE);
+                    topRight_option.setVisibility(View.VISIBLE);
+                }
+            }else{
+                startTimer((int) secondsLeft);
+            }
+
+        }else if(getTimerState() == 0 && getTimePassed() > 0){
+            //paused
             long secondsLeft = getMillisLeftInSharedPrefs();
             Log.i("SecondsLeft", String.valueOf(secondsLeft));
             if(isBreak){
@@ -147,6 +185,10 @@ public class MainActivity extends AppCompatActivity {
 
             timerTextSet(secondsLeft);
             totalSeconds_passed = getTimePassed();
+
+        }else if(getTimerState() == 0 && getTimePassed() == 0){
+            //timer has not been initialized yet
+            Log.i("Timer State", "not being initialized yet");
         }
 
         bottom_layout.setOnClickListener(new View.OnClickListener() {
