@@ -4,6 +4,9 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.icu.util.Calendar;
@@ -13,6 +16,8 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -27,6 +32,7 @@ import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
+import java.sql.Time;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
@@ -35,15 +41,15 @@ public class MainActivity extends AppCompatActivity {
     ImageView menu_btn, more_btn, back_btn;
 
     public long timerRunning;
-    public long totalSeconds_passed;
+    static public long totalSeconds_passed;
 
     static String topicSelected;
 
     androidx.coordinatorlayout.widget.CoordinatorLayout coordinatorLayout, appbar;
     LinearLayout total_time, bottom_layout;
 
-    TextView topLeft_option, topRight_option;
-    TextView incrementBy1min;
+    static TextView topLeft_option, topRight_option;
+    static TextView incrementBy1min;
     LinearLayout timer;
 
     BarChart barChart;
@@ -61,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
     static long seconds;
     static long breakSeconds;
     static ArrayList<topic_item> topics;
-
+    static long incrementedTimeInMin;
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
@@ -103,6 +109,7 @@ public class MainActivity extends AppCompatActivity {
         Log.i("BreakState", String.valueOf(getBreakState()));
         Log.i("timePassed", String.valueOf(getTimePassed()));
         Log.i("endTimeInMillis", String.valueOf(getEndTimeInMillis()));
+        Log.i("incrementedTimeByMin", String.valueOf(getIncrementedTimeByMin()));
 
         isBreak = getBreakState();
         back_btn.setVisibility(View.GONE);
@@ -110,6 +117,7 @@ public class MainActivity extends AppCompatActivity {
         barChart.setVisibility(View.GONE);
 
         topicSelected = "";
+        incrementedTimeInMin = getIncrementedTimeByMin();
 
         bottomSheetBehavior.setDraggable(false);
         getTopicSelectedFromSharedPrefs();
@@ -196,6 +204,9 @@ public class MainActivity extends AppCompatActivity {
         }else if(getTimerState() == 0 && getTimePassed() == 0){
             //timer has not been initialized yet
             Log.i("Timer State", "not being initialized yet");
+            if(getBreakState()) {
+                timerTextSet(getMillisLeftInSharedPrefs());
+            }
         }
 
         bottom_layout.setOnClickListener(new View.OnClickListener() {
@@ -242,6 +253,8 @@ public class MainActivity extends AppCompatActivity {
                 topLeft_option.setVisibility(View.INVISIBLE);
                 topRight_option.setVisibility(View.VISIBLE);
                 topRight_option.setText("Set Timer");
+                incrementedTimeInMin = 0;
+                storeincrementTedTimeByMin(incrementedTimeInMin);
 
                 seconds = TimeSetter.seconds;
                 breakSeconds = TimeSetter.breakSeconds;
@@ -254,6 +267,8 @@ public class MainActivity extends AppCompatActivity {
                 if(topRight_option.getText().toString().equals("Save")){
                     save_time();
 
+                    incrementedTimeInMin = 0;
+                    storeincrementTedTimeByMin(incrementedTimeInMin);
                     topLeft_option.setVisibility(View.INVISIBLE);
                     topRight_option.setVisibility(View.VISIBLE);
                     topRight_option.setText("Set Timer");
@@ -312,10 +327,12 @@ public class MainActivity extends AppCompatActivity {
         incrementBy1min.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                seconds = seconds + 61;
+                seconds = seconds + 60;
                 countDownTimer.cancel();
                 timerRunning = 0;
                 startTimer((int) seconds);
+                incrementedTimeInMin = incrementedTimeInMin + 1;
+                storeincrementTedTimeByMin(incrementedTimeInMin);
             }
         });
 
@@ -347,6 +364,7 @@ public class MainActivity extends AppCompatActivity {
         days.add("Sun");
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     private void startTimer(final int sec) {
         Log.i("BReak", String.valueOf(isBreak));
         if(!isBreak){
@@ -423,7 +441,7 @@ public class MainActivity extends AppCompatActivity {
                         seconds = (int) (millisUntilFinished / 1000);
                         breakSeconds = (int) (millisUntilFinished/1000);
                         if(!isBreak){
-                            totalSeconds_passed += 1;
+                            totalSeconds_passed = totalSeconds_passed + 1;
                             storeTimePassed(totalSeconds_passed);
                             storeMillisLeftInSharedPrefs(seconds);
                         }else{
@@ -435,12 +453,12 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onFinish() {
+                        totalSeconds_passed = TimeSetter.seconds + getIncrementedTimeByMin() * 60;
                         seconds = TimeSetter.seconds;
                         timerTextSet(seconds);
 
                         timerRunning = 0;
                         storeTimerState(timerRunning);
-
 
                         if(!isBreak){
                             topRight_option.setVisibility(View.VISIBLE);
@@ -463,8 +481,10 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }.start();
                 timerRunning = 1;
-
                 storeTimerState(timerRunning);
+
+                setAlarm(sec * 1000);
+
             }else if(timerRunning == 1){
                 incrementBy1min.setVisibility(View.INVISIBLE);
                 countDownTimer.cancel();
@@ -483,8 +503,51 @@ public class MainActivity extends AppCompatActivity {
                     topLeft_option.setVisibility(View.VISIBLE);
                     topRight_option.setVisibility(View.VISIBLE);
                 }
+                cancelAlarm();
+
             }
         }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private void setAlarm(int i) {
+        Calendar calendar = Calendar.getInstance();
+        long currentTimeInMillis = calendar.getTimeInMillis();
+
+        long setAlarmToTime = (currentTimeInMillis + i);
+
+        Log.i("setAlarmToTime", String.valueOf(setAlarmToTime));
+        Log.i("setAlarmAtTime", String.valueOf(currentTimeInMillis));
+
+        Calendar c = Calendar.getInstance();
+        c.setTimeInMillis(setAlarmToTime);
+
+        startAlarm(c);
+    }
+
+    private void cancelAlarm() {
+        Log.i("Note", "cancelAlarmCalled");
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(this, AlertReciever.class);
+        PendingIntent pendingIntent = PendingIntent.getService(this, 1, intent, 0);
+
+        alarmManager.cancel(pendingIntent);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private void startAlarm(Calendar c) {
+        Log.i("BreakState", String.valueOf(isBreak));
+        Log.i("topicSelected", topicSelected);
+
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(this, AlertReciever.class);
+
+        intent.putExtra("topicSelected", topicSelected);
+        intent.putExtra("isBreak", getBreakState());
+        intent.putExtra("timeePassed", totalSeconds_passed);
+
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 1, intent, 0);
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), pendingIntent);
     }
 
     private void storeTimePassed(long totalSeconds_passed) {
@@ -516,6 +579,23 @@ public class MainActivity extends AppCompatActivity {
 
         return isBreak;
     }
+
+    private void storeincrementTedTimeByMin(Long incrementedTimeInMin) {
+        SharedPreferences sharedPreferences = getSharedPreferences("incrementedTimeByMin", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        editor.putLong("incrementedTime", incrementedTimeInMin);
+        editor.apply();
+    }
+
+    private Long getIncrementedTimeByMin() {
+        SharedPreferences sharedPreferences = getSharedPreferences("incrementedTimeByMin", MODE_PRIVATE);
+        Long time = sharedPreferences.getLong("incrementedTime", 0);
+
+        return time;
+    }
+
+
 
     private void storeTimerState(long timerRunning) {
         SharedPreferences sharedPreferences = getSharedPreferences("timerState", MODE_PRIVATE);
@@ -579,7 +659,7 @@ public class MainActivity extends AppCompatActivity {
         topicSelected = sharedPreferences.getString("topicSelected", "");
     }
 
-    private void timerTextSet(long seconds) {
+    public static void timerTextSet(long seconds) {
         int hrs = (int) ((seconds % 86400 ) / 3600);
         int mins = (int) (((seconds % 86400 ) % 3600 ) / 60);
         int sec = (int) (seconds % 60);
@@ -641,7 +721,6 @@ public class MainActivity extends AppCompatActivity {
 
             totalSeconds_passed = 0;
             storeTimePassed(totalSeconds_passed);
-
 
             seconds = TimeSetter.seconds;
             breakSeconds = TimeSetter.seconds;
