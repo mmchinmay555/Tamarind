@@ -1,33 +1,52 @@
 package com.example.tamarind;
-
+import android.annotation.SuppressLint;
+import android.app.Notification;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
+import android.preference.PreferenceManager;
 import android.util.Log;
-import android.widget.Toast;
 
-import static com.example.tamarind.MainActivity.isBreak;
-import static com.example.tamarind.MainActivity.topicSelected;
+import androidx.annotation.RequiresApi;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 
 public class AlertReciever extends BroadcastReceiver {
+    @SuppressLint("StaticFieldLeak")
+    private static NotificationManagerCompat notificationManager;
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.i("TIME UP", "!");
-        Log.i("topicSelected", intent.getStringExtra("topicSelected"));
-        Log.i("isBreak", String.valueOf(intent.getBooleanExtra("isBreak", false)));
-        Log.i("timePassed", String.valueOf(MainActivity.totalSeconds_passed));
+        notificationManager = NotificationManagerCompat.from(context);
+        Log.i("Note", "Time Up!");
+        Log.i("breakStateIntent", String.valueOf(intent.getExtras().getBoolean("isBreak", false)));
+        Log.i("getBreakState", String.valueOf(PreferenceManager.getDefaultSharedPreferences(context).getBoolean("breakState",
+                false)));
+        Intent fullScreenIntent = new Intent(context, TimeUpActivity.class);
 
-        Intent in = new Intent();
-        in.setClass(context, TimeUpActivity.class); //Test is a dummy class name where to redirect
-        in.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        fullScreenIntent.putExtra("topicSelected", intent.getStringExtra("topicSelected"));
+        //fullScreenIntent.putExtra("isBreak", intent.getExtras().getBoolean("isBreak", false));
 
-        in.putExtra("topicSelected", intent.getStringExtra("topicSelected"));
-        in.putExtra("isBreak", intent.getBooleanExtra("isBreak", false));
-        in.putExtra("time_recorded", MainActivity.totalSeconds_passed);
+        PendingIntent fullScreenPendingIntent = PendingIntent.getActivity(context, 0,
+                fullScreenIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        context.startActivity(in);
+        NotificationCompat.Builder notificationBuilder =
+                new NotificationCompat.Builder(context, appNotification.CHANNEL_1_ID)
+                        .setSmallIcon(R.drawable.ic_arrow_down)
+                        .setContentTitle("Time Up!")
+                        .setContentText("Tamarind")
+                        .setPriority(NotificationCompat.PRIORITY_HIGH)
+                        .setCategory(NotificationCompat.CATEGORY_ALARM)
 
-        Log.i("Note", "Alert Recieved");
-        Toast.makeText(context, "Recieved!!", Toast.LENGTH_LONG).show();
+                        .setFullScreenIntent(fullScreenPendingIntent, true);
+
+        Notification incomingCallNotification = notificationBuilder.build();
+
+        context.startForegroundService(fullScreenIntent);
+
+        notificationManager.notify(1, incomingCallNotification);
+
     }
 }

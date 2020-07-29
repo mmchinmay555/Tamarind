@@ -4,6 +4,7 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
+import android.app.ActivityManager;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -14,6 +15,7 @@ import android.media.TimedText;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -23,6 +25,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ShareActionProvider;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.XAxis;
@@ -97,8 +100,11 @@ public class MainActivity extends AppCompatActivity {
         colonS = findViewById(R.id.timerColonS);
         incrementBy1min = findViewById(R.id.incrementBy1min);
 
-        TimeSetter.seconds = 50 * 60;
-        TimeSetter.breakSeconds = 4 * 60;
+//        TimeSetter.seconds = 50 * 60;
+//        TimeSetter.breakSeconds = 4 * 60;
+
+        TimeSetter.seconds = getSeconds();
+        TimeSetter.breakSeconds = getBreakSeconds();
 
         seconds = TimeSetter.seconds;
         breakSeconds = TimeSetter.breakSeconds;
@@ -124,11 +130,12 @@ public class MainActivity extends AppCompatActivity {
 
         if(topicSelected.isEmpty()){
             topic_btn.setVisibility(View.VISIBLE);
-            Log.i("topicSelected", "null");
+            Log.i("topicSelected", "empty");
             topicSelected = "Break";
             topic_btn.setText(topicSelected);
             timerTextSet(4 * 60);
             isBreak = true;
+            storeBreakState(true);
 
             if(getMillisLeftInSharedPrefs() > 0){
                 timerTextSet(getMillisLeftInSharedPrefs());
@@ -205,9 +212,20 @@ public class MainActivity extends AppCompatActivity {
             //timer has not been initialized yet
             Log.i("Timer State", "not being initialized yet");
             if(getBreakState()) {
-                timerTextSet(getMillisLeftInSharedPrefs());
+                timerTextSet(breakSeconds);
+            }else{
+                timerTextSet(seconds);
             }
         }
+
+        if(get_is_saved()) {
+            post_savedChanges();
+        }else if(get_is_canceled()) {
+            post_canceledChanges();
+        }else if(get_is_reset()) {
+            post_resetChanges();
+        }
+
 
         bottom_layout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -256,7 +274,9 @@ public class MainActivity extends AppCompatActivity {
                 incrementedTimeInMin = 0;
                 storeincrementTedTimeByMin(incrementedTimeInMin);
 
+
                 seconds = TimeSetter.seconds;
+                timerTextSet(seconds);
                 breakSeconds = TimeSetter.breakSeconds;
             }
         });
@@ -291,6 +311,7 @@ public class MainActivity extends AppCompatActivity {
                     isBreak = true;
 
                     storeBreakState(isBreak);
+                    Log.i("StoreBreakState", "called 312");
                     storeMillisLeftInSharedPrefs(TimeSetter.breakSeconds);
                     storeTimePassed(0);
                 }
@@ -364,6 +385,78 @@ public class MainActivity extends AppCompatActivity {
         days.add("Sun");
     }
 
+    private void post_resetChanges() {
+        Log.i("postChanges", "reset");
+        Toast.makeText(MainActivity.this, "reset", Toast.LENGTH_LONG).show();
+        MainActivity.topRight_option.setText("Set Timer");
+        MainActivity.topLeft_option.setVisibility(View.INVISIBLE);
+        MainActivity.incrementBy1min.setVisibility(View.INVISIBLE);
+        MainActivity.incrementedTimeInMin = 0;
+
+        MainActivity.breakSeconds = TimeSetter.breakSeconds;
+        MainActivity.timerTextSet(getBreakSeconds());
+
+        MainActivity.topic_btn.setText("Break");
+
+        MainActivity.isBreak = true;
+        timerRunning = 0;
+        storeTimerState(0);
+        topic_btn.setText("Break");
+
+        store_is_reset(false);
+    }
+
+    private void post_canceledChanges() {
+        Log.i("postChanges", "cancelled");
+        Toast.makeText(MainActivity.this, "cancelled", Toast.LENGTH_LONG).show();
+        MainActivity.topRight_option.setText("Set Timer");
+        MainActivity.topLeft_option.setVisibility(View.INVISIBLE);
+        MainActivity.incrementBy1min.setVisibility(View.INVISIBLE);
+
+        MainActivity.incrementedTimeInMin = 0;
+        timerRunning = 0;
+
+        storeTimerState(0);
+        timerTextSet(TimeSetter.seconds);
+        storeTimerState(0);
+        isBreak = false;
+        storeBreakState(false);
+        Log.i("StoreBreakState", "called 421");
+        if(topicSelected.equals("Break")) {
+            startActivity(new Intent(MainActivity.this, TopicsList.class));
+        }
+        topic_btn.setText(topicSelected);
+        store_is_canceled(false);
+    }
+
+    private void post_savedChanges() {
+        Log.i("postChanges", "saved");
+        Toast.makeText(MainActivity.this, "saved", Toast.LENGTH_LONG).show();
+        MainActivity.topRight_option.setText("Set Timer");
+        MainActivity.topLeft_option.setVisibility(View.INVISIBLE);
+        MainActivity.incrementBy1min.setVisibility(View.INVISIBLE);
+        MainActivity.incrementedTimeInMin = 0;
+
+        if(getBreakState()){
+            MainActivity.totalSeconds_passed = 0;
+            storeTimePassed(MainActivity.totalSeconds_passed);
+
+            MainActivity.seconds = TimeSetter.seconds;
+            MainActivity.breakSeconds = TimeSetter.seconds;
+
+            MainActivity.timerTextSet(TimeSetter.seconds);
+
+        }else{
+            MainActivity.seconds = TimeSetter.seconds;
+            MainActivity.timerTextSet(TimeSetter.seconds);
+        }
+        topRight_option.setText("Set Timer");
+        topLeft_option.setVisibility(View.INVISIBLE);
+        timerRunning = 0;
+        storeTimerState(0);
+        store_is_saved(false);
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void startTimer(final int sec) {
         Log.i("BReak", String.valueOf(isBreak));
@@ -381,8 +474,6 @@ public class MainActivity extends AppCompatActivity {
 
                 topRight_option.setVisibility(View.INVISIBLE);
                 topLeft_option.setVisibility(View.INVISIBLE);
-
-                storeBreakState(isBreak);
 
                 countDownTimer = new CountDownTimer(sec * 1000, 1000) {
                     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -453,6 +544,12 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onFinish() {
+                        if(is_app_onForeground()) {
+                            Intent intent = new Intent(MainActivity.this, TimeUpActivity.class);
+                            intent.putExtra("topicSelected", topicSelected);
+
+                            startActivity(intent);
+                        }
                         totalSeconds_passed = TimeSetter.seconds + getIncrementedTimeByMin() * 60;
                         seconds = TimeSetter.seconds;
                         timerTextSet(seconds);
@@ -469,14 +566,12 @@ public class MainActivity extends AppCompatActivity {
                             topRight_option.setVisibility(View.VISIBLE);
                             topLeft_option.setVisibility(View.INVISIBLE);
                             topRight_option.setText("Set Timer");
-                            //isBreak = false;
+
                             if(!topicSelected.equals("null")){
                                 topic_btn.setText(topicSelected);
-                                isBreak = false;
                             }else {
                                 startActivity(new Intent(MainActivity.this, TopicsList.class));
                             }
-                            Log.i("BReak", String.valueOf(isBreak));
                         }
                     }
                 }.start();
@@ -488,7 +583,7 @@ public class MainActivity extends AppCompatActivity {
             }else if(timerRunning == 1){
                 incrementBy1min.setVisibility(View.INVISIBLE);
                 countDownTimer.cancel();
-
+                cancelAlarm();
                 timerRunning = 0;
                 storeTimerState(timerRunning);
 
@@ -503,10 +598,21 @@ public class MainActivity extends AppCompatActivity {
                     topLeft_option.setVisibility(View.VISIBLE);
                     topRight_option.setVisibility(View.VISIBLE);
                 }
-                cancelAlarm();
-
             }
         }
+    }
+
+    private boolean is_app_onForeground() {
+        ActivityManager am = (ActivityManager) MainActivity.this.getSystemService(ACTIVITY_SERVICE);
+        // The first in the list of RunningTasks is always the foreground task.
+        ActivityManager.RunningTaskInfo foregroundTaskInfo = am.getRunningTasks(1).get(0);
+        String foregroundTaskPackageName = foregroundTaskInfo .topActivity.getPackageName();
+        Log.i("foreground_taskName", foregroundTaskPackageName);
+
+        if(foregroundTaskPackageName.equals("com.example.tamarind")) {
+            return true;
+        }
+        return false;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -529,7 +635,17 @@ public class MainActivity extends AppCompatActivity {
         Log.i("Note", "cancelAlarmCalled");
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(this, AlertReciever.class);
-        PendingIntent pendingIntent = PendingIntent.getService(this, 1, intent, 0);
+
+        if(isBreak) {
+            intent.putExtra("isBreak",true);
+            Log.i("BreakState 632", String.valueOf(isBreak));
+        }else {
+            Log.i("BreakState 634", String.valueOf(isBreak));
+            intent.putExtra("isBreak",false);
+        }
+
+        intent.putExtra("timePassed", seconds + getIncrementedTimeByMin());
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 1, intent, 0);
 
         alarmManager.cancel(pendingIntent);
     }
@@ -541,74 +657,118 @@ public class MainActivity extends AppCompatActivity {
 
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(this, AlertReciever.class);
-
+        Log.i("startAlarmBreak", String.valueOf(getBreakState()));
         intent.putExtra("topicSelected", topicSelected);
-        intent.putExtra("isBreak", getBreakState());
-        intent.putExtra("timeePassed", totalSeconds_passed);
+        if(isBreak) {
+            intent.putExtra("isBreak",true);
+            Log.i("BreakState 632", String.valueOf(isBreak));
+        }else {
+            Log.i("BreakState 634", String.valueOf(isBreak));
+            intent.putExtra("isBreak",false);
+        }
+
+        intent.putExtra("timePassed", seconds + getIncrementedTimeByMin());
 
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 1, intent, 0);
         alarmManager.setExact(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), pendingIntent);
     }
 
-    private void storeTimePassed(long totalSeconds_passed) {
-        SharedPreferences sharedPreferences = getSharedPreferences("totalTimePassed", MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-
-        editor.putLong("timePassed", totalSeconds_passed);
-        editor.apply();
+    private int getBreakSeconds() {
+        int time = PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getInt("breakSeconds",
+                4 * 60);
+        return time;
     }
 
-    private long getTimePassed() {
-        SharedPreferences sharedPreferences = getSharedPreferences("totalTimePassed", MODE_PRIVATE);
-
-        long timePassed = sharedPreferences.getLong("timePassed", 0);
+    private int getSeconds() {
+        int timePassed = PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getInt("seconds",
+                50 * 60);
         return timePassed;
     }
 
-    private void storeBreakState(Boolean isBreak) {
-        SharedPreferences sharedPreferences = getSharedPreferences("breakState", MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
+    private void storeTimePassed(long totalSeconds_passed) {
+        PreferenceManager.getDefaultSharedPreferences(MainActivity.this).edit().putLong("totalTimePassed",
+                totalSeconds_passed).commit();
+    }
 
-        editor.putBoolean("isBreak", isBreak);
-        editor.apply();
+    private long getTimePassed() {
+        long timePassed = PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getLong("totalTimePassed",
+                0);
+        return timePassed;
+    }
+
+    private void storeBreakState(Boolean break_state) {
+        PreferenceManager.getDefaultSharedPreferences(MainActivity.this).edit().putBoolean("breakState",
+                break_state).commit();
     }
 
     private Boolean getBreakState() {
-        SharedPreferences sharedPreferences = getSharedPreferences("breakState", MODE_PRIVATE);
-        Boolean isBreak = sharedPreferences.getBoolean("isBreak", false);
+        Boolean isBreak = PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getBoolean("breakState",
+                false);
 
         return isBreak;
     }
 
-    private void storeincrementTedTimeByMin(Long incrementedTimeInMin) {
-        SharedPreferences sharedPreferences = getSharedPreferences("incrementedTimeByMin", MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
+    private Boolean get_is_saved() {
 
-        editor.putLong("incrementedTime", incrementedTimeInMin);
-        editor.apply();
+        Boolean is_saved = PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getBoolean("is_saved",
+                false);
+        Log.i("is_saved", String.valueOf(is_saved));
+        Toast.makeText(MainActivity.this, "saved", Toast.LENGTH_LONG).show();
+        return is_saved;
+    }
+
+    private Boolean get_is_reset() {
+        Boolean is_reset = PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getBoolean("is_reset",
+                false);
+        Log.i("is_reset", String.valueOf(is_reset));
+        Toast.makeText(MainActivity.this, "is_reset", Toast.LENGTH_LONG).show();
+
+        return is_reset;
+    }
+
+    private Boolean get_is_canceled() {
+        Boolean is_canceled = PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getBoolean("is_canceled",
+                false);
+        Toast.makeText(MainActivity.this, "is_canceled", Toast.LENGTH_LONG).show();
+        return is_canceled;
+    }
+
+    private void store_is_saved(Boolean is_saved) {
+        PreferenceManager.getDefaultSharedPreferences(MainActivity.this).edit().putBoolean("is_saved",
+                is_saved).commit();
+    }
+
+    private void store_is_reset(Boolean is_reset) {
+        PreferenceManager.getDefaultSharedPreferences(MainActivity.this).edit().putBoolean("is_reset",
+                is_reset).commit();
+    }
+
+    private void store_is_canceled(Boolean is_canceled) {
+        PreferenceManager.getDefaultSharedPreferences(MainActivity.this).edit().putBoolean("is_canceled",
+                is_canceled).commit();
+    }
+
+    private void storeincrementTedTimeByMin(Long incrementedTimeInMin) {
+        PreferenceManager.getDefaultSharedPreferences(MainActivity.this).edit().putLong("incrementedTimeByMin",
+                incrementedTimeInMin).commit();
     }
 
     private Long getIncrementedTimeByMin() {
-        SharedPreferences sharedPreferences = getSharedPreferences("incrementedTimeByMin", MODE_PRIVATE);
-        Long time = sharedPreferences.getLong("incrementedTime", 0);
-
+        Long time = PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getLong("incrementedTimeByMin",
+                0);
         return time;
     }
 
 
 
-    private void storeTimerState(long timerRunning) {
-        SharedPreferences sharedPreferences = getSharedPreferences("timerState", MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-
-        editor.putLong("timerState", timerRunning);
-        editor.apply();
+    private void storeTimerState(long i) {
+        PreferenceManager.getDefaultSharedPreferences(MainActivity.this).edit().putLong("timerState",
+                i).commit();
     }
 
     private long getTimerState() {
-        SharedPreferences sharedPreferences = getSharedPreferences("timerState", MODE_PRIVATE);
-
-        long timerState = sharedPreferences.getLong("timerState", 0);
+        long timerState = PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getLong("timerState",
+                0);
         return timerState;
     }
 
@@ -630,17 +790,15 @@ public class MainActivity extends AppCompatActivity {
 
         return endTimeInMilllis;
     }
-    private void storeMillisLeftInSharedPrefs(long seconds) {
-        SharedPreferences sharedPreferences = getSharedPreferences("millisLeft", MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
 
-        editor.putLong("millisLeft", seconds);
-        editor.apply();
+    private void storeMillisLeftInSharedPrefs(long i) {
+        PreferenceManager.getDefaultSharedPreferences(MainActivity.this).edit().putLong("millisLeft",
+                i).commit();
     }
 
     private long getMillisLeftInSharedPrefs(){
-        SharedPreferences sharedPreferences = getSharedPreferences("millisLeft", MODE_PRIVATE);
-        long millisLeft = sharedPreferences.getLong("millisLeft", 0);
+        long millisLeft = PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getLong("millisLeft",
+                0);
 
         return millisLeft;
     }
@@ -731,6 +889,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         storeBreakState(isBreak);
+        Log.i("StoreBreakState", "called 852");
         storeMillisLeftInSharedPrefs(0);
         storeTimerState(0);
     }
@@ -753,22 +912,28 @@ public class MainActivity extends AppCompatActivity {
                 isBreak = true; //as default
             }
         }
-        countDownTimer.cancel();
-        countDownTimer.onFinish();
 
         totalSeconds_passed = 0;
         storeTimePassed(totalSeconds_passed);
 
         storeBreakState(isBreak);
+        Log.i("StoreBreakState", "called 881");
+
 
         if(isBreak) {
-
             storeMillisLeftInSharedPrefs(TimeSetter.breakSeconds);
         }else {
             storeMillisLeftInSharedPrefs(TimeSetter.seconds);
         }
 
+        cancelAlarm();
         storeTimerState(0);
+    }
+
+    @Override
+    public void onBackPressed() {
+        finish();
+        System.exit(0);
     }
 
     private void initialize_bar() {

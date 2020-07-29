@@ -2,7 +2,9 @@ package com.example.tamarind;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -92,12 +94,14 @@ public class TimeSetter extends AppCompatActivity {
                 if(!MainActivity.isBreak){
                     if(get_seconds() > 59){
                         seconds = get_seconds();
+                        StoreSeconds(seconds);
                     }else{
                         finish();
                     }
                 }else{
                     if(get_seconds() > 59){
                         breakSeconds = get_seconds();
+                        StoreBreakSeconds(breakSeconds);
                     }else{
                         finish();
                     }
@@ -166,6 +170,15 @@ public class TimeSetter extends AppCompatActivity {
                 .setTextColor(getResources().getColor(R.color.white))
                 .setAnimationMode(BaseTransientBottomBar.ANIMATION_MODE_SLIDE)
                 .show();
+    }
+    private void StoreBreakSeconds(int seconds) {
+        PreferenceManager.getDefaultSharedPreferences(TimeSetter.this).edit().putInt("breakSeconds",
+                seconds).commit();
+    }
+
+    private void StoreSeconds(int seconds) {
+        PreferenceManager.getDefaultSharedPreferences(TimeSetter.this).edit().putInt("seconds",
+                seconds).commit();
     }
 
     private int get_seconds() {

@@ -3,10 +3,12 @@ package com.example.tamarind;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -61,15 +63,19 @@ public class TopicsList extends AppCompatActivity {
         back_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if((topics.size() > 0 && !selectedTopic.equals("null")) || isBreak){
+                if((topics.size() > 0 && !selectedTopic.equals("null")) || isBreak) {
                     if(isBreak){
                         MainActivity.topic_btn.setText("Break");
                         MainActivity.topic_btn.setVisibility(View.VISIBLE);
+                        MainActivity.timerTextSet(breakSeconds);
                     }else{
                         MainActivity.topic_btn.setText(selectedTopic);
                         MainActivity.topicSelected = selectedTopic;
                         MainActivity.topic_btn.setVisibility(View.VISIBLE);
+                        MainActivity.timerTextSet(seconds);
                     }
+                    storeBreakState(isBreak);
+                    saveTopicInSharedPrefs(selectedTopic);
                     finish();
                 }else{
                     Snackbar.make(newTopic_addText, "Topic can't be empty", Snackbar.LENGTH_SHORT)
@@ -185,5 +191,18 @@ public class TopicsList extends AppCompatActivity {
             MainActivity.timerMin.setText(String.valueOf(mins));
             MainActivity.timerSec.setText("00");
         }
+    }
+    private void storeBreakState(Boolean break_state) {
+        PreferenceManager.getDefaultSharedPreferences(TopicsList.this).edit().putBoolean("breakState",
+                break_state).commit();
+    }
+
+    private void saveTopicInSharedPrefs(String topicSelected) {
+        SharedPreferences sharedPreferences = getSharedPreferences("sharedPrefsTopicSelected", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        editor.putString("topicSelected", topicSelected);
+        editor.apply();
+        editor.commit();
     }
 }

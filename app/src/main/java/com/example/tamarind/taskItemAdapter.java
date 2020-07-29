@@ -49,6 +49,7 @@ public class taskItemAdapter extends ArrayAdapter<topic_item> {
             @Override
             public void onClick(View v) {
                 TopicsList.selectedTopic = item.topicName;
+                topicSelected = item.topicName;
                 MainActivity.isBreak = false;
                 seconds = TimeSetter.seconds;
 

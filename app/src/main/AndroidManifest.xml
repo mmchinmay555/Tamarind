@@ -1,18 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.example.tamarind">
 
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
+    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
+    <uses-permission android:name="android.permission.GET_TASKS" />
 
     <application
+        android:name=".appNotification"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".TimeUpActivity"></activity>
+        <activity android:name=".TimeUpActivity"
+            tools:ignore="Instantiatable" />
         <activity android:name=".TopicsList" />
         <activity android:name=".TimeSetter" />
         <activity android:name=".MainActivity">
@@ -27,6 +32,8 @@
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
 
-        <receiver android:name=".AlertReciever" />
+        <receiver android:name=".AlertReciever"/>
+
     </application>
+
 </manifest>
