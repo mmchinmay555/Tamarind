@@ -20,14 +20,8 @@ public class AlertReciever extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         notificationManager = NotificationManagerCompat.from(context);
-        Log.i("Note", "Time Up!");
-        Log.i("breakStateIntent", String.valueOf(intent.getExtras().getBoolean("isBreak", false)));
-        Log.i("getBreakState", String.valueOf(PreferenceManager.getDefaultSharedPreferences(context).getBoolean("breakState",
-                false)));
         Intent fullScreenIntent = new Intent(context, TimeUpActivity.class);
-
         fullScreenIntent.putExtra("topicSelected", intent.getStringExtra("topicSelected"));
-        //fullScreenIntent.putExtra("isBreak", intent.getExtras().getBoolean("isBreak", false));
 
         PendingIntent fullScreenPendingIntent = PendingIntent.getActivity(context, 0,
                 fullScreenIntent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -43,10 +37,8 @@ public class AlertReciever extends BroadcastReceiver {
                         .setFullScreenIntent(fullScreenPendingIntent, true);
 
         Notification incomingCallNotification = notificationBuilder.build();
-
         context.startForegroundService(fullScreenIntent);
 
         notificationManager.notify(1, incomingCallNotification);
-
     }
 }

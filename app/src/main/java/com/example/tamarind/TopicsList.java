@@ -40,7 +40,6 @@ public class TopicsList extends AppCompatActivity {
     ListView listView_topics;
     TextView breakTime;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -137,7 +137,6 @@ public class TimeUpActivity extends AppCompatActivity {
 
                 startActivity(new Intent(TimeUpActivity.this, MainActivity.class));
                 finish();
-
             }
         });
     }
@@ -186,7 +185,6 @@ public class TimeUpActivity extends AppCompatActivity {
                 totalSeconds_passed).commit();
     }
 
-
     private Long getIncrementedTimeByMin() {
         Long time = PreferenceManager.getDefaultSharedPreferences(TimeUpActivity.this).getLong("incrementedTimeByMin",
                 0);
@@ -197,6 +195,7 @@ public class TimeUpActivity extends AppCompatActivity {
         PreferenceManager.getDefaultSharedPreferences(TimeUpActivity.this).edit().putLong("incrementedTimeByMin",
                 incrementedTimeInMin).commit();
     }
+
     private int getBreakSeconds() {
         int time = PreferenceManager.getDefaultSharedPreferences(TimeUpActivity.this).getInt("breakSeconds",
                4 * 60);
@@ -223,5 +222,4 @@ public class TimeUpActivity extends AppCompatActivity {
         PreferenceManager.getDefaultSharedPreferences(TimeUpActivity.this).edit().putBoolean("is_canceled",
                 is_canceled).commit();
     }
-
 }
