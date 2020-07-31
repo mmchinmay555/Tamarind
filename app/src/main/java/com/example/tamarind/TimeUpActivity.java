@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,7 +25,6 @@ import com.google.android.material.snackbar.Snackbar;
 public class TimeUpActivity extends AppCompatActivity {
 
     TextView hr_display, h, min_display, min;
-    TextView incrementBy5min;
     Button bottom_left, bottom_right;
     TextView topic_Selected_text;
 
@@ -32,7 +32,7 @@ public class TimeUpActivity extends AppCompatActivity {
     String topic_selected;
     long time_recorded;
 
-    static Boolean is_canceled, is_saved, is_reset;
+    static Boolean is_canceled, is_saved, is_reset, is_incrementedBy5min;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +48,6 @@ public class TimeUpActivity extends AppCompatActivity {
         h = findViewById(R.id.h);
         min_display = findViewById(R.id.min_display);
         min = findViewById(R.id.m);
-        incrementBy5min = findViewById(R.id.imcrementBy5min);
         bottom_left = findViewById(R.id.bottom_left);
         bottom_right = findViewById(R.id.bottom_right);
         topic_Selected_text = findViewById(R.id.topic_display);
@@ -82,7 +81,7 @@ public class TimeUpActivity extends AppCompatActivity {
         if(hrs == 0) {
             hr_display.setVisibility(View.GONE);
             h.setVisibility(View.GONE);
-        } else {
+        }else {
             hr_display.setVisibility(View.VISIBLE);
             h.setVisibility(View.VISIBLE);
         }
@@ -139,7 +138,9 @@ public class TimeUpActivity extends AppCompatActivity {
                 finish();
             }
         });
+
     }
+
 
     private void resetTime() {
         is_reset = true;

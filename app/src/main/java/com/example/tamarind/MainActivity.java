@@ -23,6 +23,7 @@ import android.view.WindowManager;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.ShareActionProvider;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -50,6 +51,8 @@ public class MainActivity extends AppCompatActivity {
     static TextView topLeft_option, topRight_option;
     static TextView incrementBy1min;
     LinearLayout timer;
+    ProgressBar progressBar;
+
 
     BarChart barChart;
     BarData barData;
@@ -98,6 +101,7 @@ public class MainActivity extends AppCompatActivity {
         colonM = findViewById(R.id.timerColonM);
         colonS = findViewById(R.id.timerColonS);
         incrementBy1min = findViewById(R.id.incrementBy1min);
+        progressBar = findViewById(R.id.progressBar);
 
         TimeSetter.seconds = getSeconds();
         TimeSetter.breakSeconds = getBreakSeconds();
@@ -272,6 +276,7 @@ public class MainActivity extends AppCompatActivity {
                 seconds = TimeSetter.seconds;
                 timerTextSet(seconds);
                 breakSeconds = TimeSetter.breakSeconds;
+                progressBar.setProgress(0);
             }
         });
 
@@ -286,6 +291,7 @@ public class MainActivity extends AppCompatActivity {
                     topLeft_option.setVisibility(View.INVISIBLE);
                     topRight_option.setVisibility(View.VISIBLE);
                     topRight_option.setText("Set Timer");
+                    progressBar.setProgress(0);
 
                 }else if(topRight_option.getText().toString().equals("Set Timer")){
                     setTimer();
@@ -401,6 +407,7 @@ public class MainActivity extends AppCompatActivity {
         storeTimerState(0);
         topic_btn.setText("Break");
 
+        progressBar.setProgress(0);
         store_is_reset(false);
     }
 
@@ -424,6 +431,7 @@ public class MainActivity extends AppCompatActivity {
             startActivity(new Intent(MainActivity.this, TopicsList.class));
         }
         topic_btn.setText(topicSelected);
+        progressBar.setProgress(0);
         store_is_canceled(false);
     }
 
@@ -452,6 +460,7 @@ public class MainActivity extends AppCompatActivity {
         topLeft_option.setVisibility(View.INVISIBLE);
         timerRunning = 0;
         storeTimerState(0);
+        progressBar.setProgress(0);
         store_is_saved(false);
     }
 
@@ -483,6 +492,7 @@ public class MainActivity extends AppCompatActivity {
                         h = h / 60;
 
                         updateTimerText(h, m, s);
+                        updateProgressbar(millisUntilFinished);
 
                         seconds = (int) (millisUntilFinished / 1000);
                         breakSeconds = (int) (millisUntilFinished/1000);
@@ -554,6 +564,22 @@ public class MainActivity extends AppCompatActivity {
                     topRight_option.setVisibility(View.VISIBLE);
                 }
             }
+        }
+    }
+
+    private void updateProgressbar(long millisLeft) {
+        long totalmillis;
+
+        if(isBreak) {
+            totalmillis = (getBreakSeconds() * 1000) + (getIncrementedTimeByMin() * 60 * 1000);
+        } else {
+            totalmillis = (getSeconds() * 1000) +( getIncrementedTimeByMin() * 60 * 1000);
+        }
+
+        int progress_millis = (int) (((totalmillis - millisLeft) * 100) / totalmillis);
+        Log.i("progress_millis", String.valueOf(progress_millis));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            progressBar.setProgress(progress_millis, true);
         }
     }
 
@@ -855,13 +881,13 @@ public class MainActivity extends AppCompatActivity {
         if(!isBreak){
             Log.i("timeRecorded", topic_btn.getText() + ": " + totalSeconds_passed);
             countDownTimer.cancel();
-            countDownTimer.onFinish();
 
             totalSeconds_passed = 0;
             storeTimePassed(totalSeconds_passed);
 
             seconds = TimeSetter.seconds;
             breakSeconds = TimeSetter.seconds;
+            timerTextSet(seconds);
 
         }else{
             seconds = TimeSetter.seconds;
