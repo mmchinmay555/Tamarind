@@ -25,8 +25,6 @@ public class AlertReciever extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         notificationManager = NotificationManagerCompat.from(context);
         Intent fullScreenIntent = new Intent(context, TimeUpActivity.class);
-        fullScreenIntent.putExtra("topicSelected", intent.getStringExtra("topicSelected"));
-
         PendingIntent fullScreenPendingIntent = PendingIntent.getActivity(context, 0,
                 fullScreenIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 

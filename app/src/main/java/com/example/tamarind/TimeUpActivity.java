@@ -58,7 +58,7 @@ public class TimeUpActivity extends AppCompatActivity {
         //retrieving data from intent
         Intent i = getIntent();
 
-        topic_selected = i.getStringExtra("topicSelected");
+        topic_selected = getTopic_selected();
         break_state = PreferenceManager.getDefaultSharedPreferences(TimeUpActivity.this).getBoolean("breakState",
                 false);
         Log.i("getBreakStateTimeUp", String.valueOf(PreferenceManager.getDefaultSharedPreferences(TimeUpActivity.this).getBoolean("breakState",
@@ -225,5 +225,9 @@ public class TimeUpActivity extends AppCompatActivity {
     private void store_is_canceled(Boolean is_canceled) {
         PreferenceManager.getDefaultSharedPreferences(TimeUpActivity.this).edit().putBoolean("is_canceled",
                 is_canceled).commit();
+    }
+
+    private String getTopic_selected() {
+        return PreferenceManager.getDefaultSharedPreferences(TimeUpActivity.this).getString("sharedPrefsTopicSelected", "null");
     }
 }

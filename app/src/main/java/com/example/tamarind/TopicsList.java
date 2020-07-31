@@ -196,12 +196,8 @@ public class TopicsList extends AppCompatActivity {
                 break_state).commit();
     }
 
-    private void saveTopicInSharedPrefs(String topicSelected) {
-        SharedPreferences sharedPreferences = getSharedPreferences("sharedPrefsTopicSelected", MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-
-        editor.putString("topicSelected", topicSelected);
-        editor.apply();
-        editor.commit();
+    private void saveTopicInSharedPrefs(String sharedPrefsTopicSelected) {
+        PreferenceManager.getDefaultSharedPreferences(TopicsList.this).edit().putString("sharedPrefsTopicSelected",
+                sharedPrefsTopicSelected).commit();
     }
 }
