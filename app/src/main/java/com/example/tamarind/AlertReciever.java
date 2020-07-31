@@ -5,8 +5,12 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Build;
 import android.preference.PreferenceManager;
+import android.text.format.Time;
 import android.util.Log;
 
 import androidx.annotation.RequiresApi;
@@ -37,6 +41,7 @@ public class AlertReciever extends BroadcastReceiver {
                         .setFullScreenIntent(fullScreenPendingIntent, true);
 
         Notification incomingCallNotification = notificationBuilder.build();
+        incomingCallNotification.flags = Notification.FLAG_INSISTENT;
         context.startForegroundService(fullScreenIntent);
 
         notificationManager.notify(1, incomingCallNotification);

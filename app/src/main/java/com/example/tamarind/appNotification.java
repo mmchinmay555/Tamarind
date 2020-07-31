@@ -24,16 +24,17 @@ public class appNotification extends Application {
                     "Channel 1",
                     NotificationManager.IMPORTANCE_HIGH
             );
+
             Uri alarmUri = RingtoneManager.getActualDefaultRingtoneUri(appNotification.this, RingtoneManager.TYPE_ALARM);
             if (alarmUri == null) {
                 alarmUri = RingtoneManager.getActualDefaultRingtoneUri(appNotification.this, RingtoneManager.TYPE_RINGTONE);
             }
-            AudioAttributes audioAttributes = new AudioAttributes.Builder()
-                    .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+            AudioAttributes attributes = new AudioAttributes.Builder()
                     .setUsage(AudioAttributes.USAGE_ALARM)
+                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
                     .build();
 
-            channel1.setSound(alarmUri, audioAttributes);
+            channel1.setSound(alarmUri, attributes);
             channel1.setDescription("This is Channel 1");
 
             NotificationChannel channel2 = new NotificationChannel(

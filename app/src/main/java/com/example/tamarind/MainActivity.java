@@ -391,7 +391,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void post_resetChanges() {
         Log.i("postChanges", "reset");
-        Toast.makeText(MainActivity.this, "reset", Toast.LENGTH_LONG).show();
         MainActivity.topRight_option.setText("Set Timer");
         MainActivity.topLeft_option.setVisibility(View.INVISIBLE);
         MainActivity.incrementBy1min.setVisibility(View.INVISIBLE);
@@ -413,7 +412,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void post_canceledChanges() {
         Log.i("postChanges", "cancelled");
-        Toast.makeText(MainActivity.this, "cancelled", Toast.LENGTH_LONG).show();
         MainActivity.topRight_option.setText("Set Timer");
         MainActivity.topLeft_option.setVisibility(View.INVISIBLE);
         MainActivity.incrementBy1min.setVisibility(View.INVISIBLE);
@@ -437,7 +435,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void post_savedChanges() {
         Log.i("postChanges", "saved");
-        Toast.makeText(MainActivity.this, "saved", Toast.LENGTH_LONG).show();
         MainActivity.topRight_option.setText("Set Timer");
         MainActivity.topLeft_option.setVisibility(View.INVISIBLE);
         MainActivity.incrementBy1min.setVisibility(View.INVISIBLE);
@@ -577,7 +574,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         int progress_millis = (int) (((totalmillis - millisLeft) * 100) / totalmillis);
-        Log.i("progress_millis", String.valueOf(progress_millis));
+        //Log.i("progress_millis", String.valueOf(progress_millis));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             progressBar.setProgress(progress_millis, true);
         }

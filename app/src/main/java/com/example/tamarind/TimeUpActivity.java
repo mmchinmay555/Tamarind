@@ -8,6 +8,10 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.AudioAttributes;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -31,7 +35,6 @@ public class TimeUpActivity extends AppCompatActivity {
     Boolean break_state;
     String topic_selected;
     long time_recorded;
-
     static Boolean is_canceled, is_saved, is_reset, is_incrementedBy5min;
 
     @Override
