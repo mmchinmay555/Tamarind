@@ -1,17 +1,12 @@
 package com.example.tamarind;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.Manifest;
-import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -24,7 +19,6 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 
 import static com.example.tamarind.MainActivity.breakSeconds;
@@ -145,7 +139,7 @@ public class TopicsList extends AppCompatActivity {
     }
 
     private void initalizeAdapter() {
-        taskItemAdapter adapter = new taskItemAdapter(this, topics);
+        topicItemAdapter adapter = new topicItemAdapter(this, topics);
         listView_topics.setAdapter(adapter);
         listView_topics.setDivider(null);
     }
