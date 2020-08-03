@@ -1,17 +1,10 @@
 package com.example.tamarind;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
 
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.media.AudioAttributes;
-import android.media.Ringtone;
-import android.media.RingtoneManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -19,12 +12,8 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.google.android.material.snackbar.BaseTransientBottomBar;
-import com.google.android.material.snackbar.Snackbar;
 
 public class TimeUpActivity extends AppCompatActivity {
 
@@ -35,7 +24,7 @@ public class TimeUpActivity extends AppCompatActivity {
     Boolean break_state;
     String topic_selected;
     long time_recorded;
-    static Boolean is_canceled, is_saved, is_reset, is_incrementedBy5min;
+    static Boolean is_canceled, is_saved, is_reset;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

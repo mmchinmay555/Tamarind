@@ -111,7 +111,7 @@ public class TopicsList extends AppCompatActivity {
     }
 
     private void addTopic(String s) {
-        topic_item item = new topic_item(s);
+        topic_item_forList item = new topic_item_forList(s);
         topics.add(item);
 
         SharedPreferences sharedPreferences = getSharedPreferences("sharedPrefs", MODE_PRIVATE);
@@ -130,7 +130,7 @@ public class TopicsList extends AppCompatActivity {
         Gson gson = new Gson();
         String json = sharedPreferences.getString("topicsList", null);
 
-        Type type = new TypeToken<ArrayList<topic_item>>(){}.getType();
+        Type type = new TypeToken<ArrayList<topic_item_forList>>(){}.getType();
         topics = gson.fromJson(json, type);
 
         if (topics == null) {
@@ -139,7 +139,7 @@ public class TopicsList extends AppCompatActivity {
     }
 
     private void initalizeAdapter() {
-        topicItemAdapter adapter = new topicItemAdapter(this, topics);
+        topicItem_forList_Adapter adapter = new topicItem_forList_Adapter(this, topics);
         listView_topics.setAdapter(adapter);
         listView_topics.setDivider(null);
     }

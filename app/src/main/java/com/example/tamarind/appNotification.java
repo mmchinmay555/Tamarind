@@ -1,6 +1,5 @@
 package com.example.tamarind;
 
-import android.app.AlarmManager;
 import android.app.Application;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -21,7 +20,7 @@ public class appNotification extends Application {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel1 = new NotificationChannel(
                     CHANNEL_1_ID,
-                    "Channel 1",
+                    "Time up Alert",
                     NotificationManager.IMPORTANCE_HIGH
             );
 

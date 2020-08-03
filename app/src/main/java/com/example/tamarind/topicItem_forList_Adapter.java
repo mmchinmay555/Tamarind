@@ -1,19 +1,14 @@
 package com.example.tamarind;
 
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,10 +16,7 @@ import androidx.annotation.Nullable;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
-import java.lang.reflect.Type;
-import java.sql.Time;
 import java.util.ArrayList;
 
 import static android.content.Context.MODE_PRIVATE;
@@ -32,17 +24,15 @@ import static com.example.tamarind.MainActivity.seconds;
 import static com.example.tamarind.MainActivity.topicSelected;
 import static com.example.tamarind.MainActivity.topics;
 
-public class topicItemAdapter extends ArrayAdapter<topic_item> {
-    public topicItemAdapter(@NonNull Context context, ArrayList<topic_item> resource) {
+public class topicItem_forList_Adapter extends ArrayAdapter<topic_item_forList> {
+    public topicItem_forList_Adapter(@NonNull Context context, ArrayList<topic_item_forList> resource) {
         super(context, 0, resource);
     }
-
-    Boolean is_undoDelete_selected;
 
     @NonNull
     @Override
     public View getView(final int position, @Nullable View convertView, @NonNull final ViewGroup parent) {
-        final topic_item item = getItem(position);
+        final topic_item_forList item = getItem(position);
 
         if(convertView == null){
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.topic_view, parent, false);
@@ -77,7 +67,6 @@ public class topicItemAdapter extends ArrayAdapter<topic_item> {
                 TopicsList.selectedTopic = "null";
                 topicSelected = "null";
 
-                int s = 0;
                 Snackbar.make(v, "Item deleted", Snackbar.LENGTH_SHORT)
                         .setTextColor(getContext().getResources().getColor(R.color.white))
                         .setAnimationMode(BaseTransientBottomBar.ANIMATION_MODE_SLIDE)
@@ -92,27 +81,12 @@ public class topicItemAdapter extends ArrayAdapter<topic_item> {
                         .setDuration(2000)
                         .show();
 
-
                 updateTopics();
-
                 return true;
             }
         });
 
         return convertView;
-    }
-
-    private void reloadTopics() {
-        SharedPreferences sharedPreferences = getContext().getSharedPreferences("sharedPrefs", MODE_PRIVATE);
-        Gson gson = new Gson();
-        String json = sharedPreferences.getString("topicsList", null);
-
-        Type type = new TypeToken<ArrayList<topic_item>>(){}.getType();
-        topics = gson.fromJson(json, type);
-
-        if (topics == null) {
-            topics = new ArrayList<>();
-        }
     }
 
     private void setTimeText(int s) {

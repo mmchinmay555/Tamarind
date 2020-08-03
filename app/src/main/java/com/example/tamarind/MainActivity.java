@@ -11,20 +11,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.icu.util.Calendar;
-import android.media.TimedText;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.ShareActionProvider;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,9 +32,17 @@ import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
-import java.sql.Time;
+import java.lang.reflect.Type;
+import java.security.cert.CollectionCertStoreParameters;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity {
     private BottomSheetBehavior bottomSheetBehavior;
@@ -68,11 +73,22 @@ public class MainActivity extends AppCompatActivity {
     CountDownTimer countDownTimer = null;
     static long seconds;
     static long breakSeconds;
-    static ArrayList<topic_item> topics;
+    static ArrayList<topic_item_forList> topics;
     static long incrementedTimeInMin;
     public long timerRunning;
     static public long totalSeconds_passed;
+    public long timer_started_at;
 
+    //tracking data
+    ImageView select_previous_day, select_next_day;
+    TextView current_day_display;
+    ListView listView_topics_recorded;
+    static ArrayList<topic_item> topic_items;
+    static ArrayList<topic_item> current_View_list;
+    DateFormat dateFormat;
+    TextView day_reference;
+    TextView tot_hr, tot_hr_text, tot_min, tot_min_text;
+    static long topic_time_max_progress;
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
@@ -102,6 +118,17 @@ public class MainActivity extends AppCompatActivity {
         colonS = findViewById(R.id.timerColonS);
         incrementBy1min = findViewById(R.id.incrementBy1min);
         progressBar = findViewById(R.id.progressBar);
+        listView_topics_recorded = findViewById(R.id.listView_topics_recorded);
+        select_next_day = findViewById(R.id.select_next_day);
+        select_previous_day = findViewById(R.id.select_previous_day);
+        current_day_display = findViewById(R.id.current_day);
+        day_reference = findViewById(R.id.day_reference);
+        tot_hr = findViewById(R.id.tot_hr);
+        tot_hr_text = findViewById(R.id.tot_hr_txt);
+        tot_min = findViewById(R.id.tot_min);
+        tot_min_text = findViewById(R.id.tot_min_txt);
+
+        bottomSheet.setNestedScrollingEnabled(true);
 
         TimeSetter.seconds = getSeconds();
         TimeSetter.breakSeconds = getBreakSeconds();
@@ -127,6 +154,17 @@ public class MainActivity extends AppCompatActivity {
 
         bottomSheetBehavior.setDraggable(false);
         getTopicSelectedFromSharedPrefs();
+
+        //time recording
+        load_topic_items();
+
+        current_View_list = new ArrayList<topic_item>();
+        dateFormat = new SimpleDateFormat("EEE , dd MMM");
+        update_currentView_list(Calendar.getInstance());
+        listView_topics_recorded.setVisibility(View.GONE);
+        select_previous_day.setVisibility(View.GONE);
+        select_next_day.setVisibility(View.GONE);
+        current_day_display.setVisibility(View.GONE);
 
         if(topicSelected.isEmpty()){
             topic_btn.setVisibility(View.VISIBLE);
@@ -352,6 +390,75 @@ public class MainActivity extends AppCompatActivity {
                     Log.i("BReak", "false");
                     Log.i("timeSetFor", String.valueOf(seconds) + " " + String.valueOf(seconds/60));
                 }
+            }
+        });
+
+        //bottomSheet
+        final Calendar calendar = Calendar.getInstance();
+        final Calendar currentDate = Calendar.getInstance();
+        current_day_display.setText(dateFormat.format(calendar.getTime()));
+
+        select_next_day.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                calendar.add(Calendar.DAY_OF_MONTH, 1);
+
+                long difference = calendar.getTimeInMillis() - currentDate.getTimeInMillis();
+                int days_diff = (int) TimeUnit.MILLISECONDS.toDays(difference);
+                Log.i("daysDifference", String.valueOf(days_diff));
+
+                if(difference <= 0) {
+                    current_day_display.setText(dateFormat.format(calendar.getTime()));
+                    if(difference == 0){
+                        day_reference.setText("Today");
+                    }else if(days_diff == -1){
+                        //yesterday
+                        day_reference.setText("Yesterday");
+                    }else{
+                        day_reference.setText("");
+                    }
+                }else if(difference > 0) {
+                    //today
+                    day_reference.setText("Today");
+                    calendar.setTime(currentDate.getTime());
+                }
+                update_currentView_list(calendar);
+                initalizeAdapter();
+            }
+        });
+
+        select_previous_day.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                calendar.add(Calendar.DAY_OF_MONTH, -1);
+                current_day_display.setText(dateFormat.format(calendar.getTime()));
+
+                long difference = calendar.getTimeInMillis() - currentDate.getTimeInMillis();
+                int days_diff = (int) TimeUnit.MILLISECONDS.toDays(difference);
+
+                Log.i("daysDifference", String.valueOf(days_diff));
+
+                if(days_diff == -1){
+                    //yesterday
+                    day_reference.setText("Yesterday");
+                }else {
+                    day_reference.setText("");
+                }
+
+                update_currentView_list(calendar);
+                initalizeAdapter();
+            }
+        });
+
+        current_day_display.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                current_day_display.setText(dateFormat.format(currentDate.getTime()));
+                calendar.setTime(currentDate.getTime());
+
+                day_reference.setText("Today");
+                update_currentView_list(calendar);
+                initalizeAdapter();
             }
         });
 
@@ -873,11 +980,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     private void save_time() {
         if(!isBreak){
             Log.i("timeRecorded", topic_btn.getText() + ": " + totalSeconds_passed);
             countDownTimer.cancel();
-
+            store_time_recorded(topicSelected, totalSeconds_passed);
             totalSeconds_passed = 0;
             storeTimePassed(totalSeconds_passed);
 
@@ -894,6 +1002,36 @@ public class MainActivity extends AppCompatActivity {
         Log.i("StoreBreakState", "called 852");
         storeMillisLeftInSharedPrefs(0);
         storeTimerState(0);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private void store_time_recorded(String topicSelected, long totalSeconds_passed) {
+        load_topic_items();
+        //record time
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(calendar.getTimeInMillis() - (TimeSetter.seconds * 1000) - ((getIncrementedTimeByMin() + 4) * 60 * 1000));
+        String date = dateFormat.format(calendar.getTime() );
+        topic_item topic_item = new topic_item(topicSelected, totalSeconds_passed, date , calendar.get(Calendar.DAY_OF_WEEK));
+
+        Boolean found_item = false;
+        for(int i = 0; i < topic_items.size(); i++) {
+            if (topic_items.get(i).topic_name.equals(topic_item.topic_name) && topic_items.get(i).date_recorded.equals(topic_item.date_recorded)) {
+                topic_items.get(i).time_recorded += totalSeconds_passed;
+                found_item = true;
+
+                Log.i("updatedItem", topic_items.get(i).topic_name + "\n" + topic_items.get(i).date_recorded + "\n" + topic_items.get(i).day_recorded + "\n" + topic_items.get(i).time_recorded);
+            }
+        }
+
+        if(!found_item) {
+            topic_items.add(topic_item);
+            Log.i("recordedItem", topic_item.topic_name + "\n" + topic_item.date_recorded + "\n" + topic_item.day_recorded + "\n" + topic_item.time_recorded);
+        }
+
+        //store in preferences
+        save_topic_items();
+        load_topic_items();
+        update_currentView_list(Calendar.getInstance());
     }
 
     private void setTimer() {
@@ -959,12 +1097,17 @@ public class MainActivity extends AppCompatActivity {
         back_btn.setVisibility(View.GONE);
         bottomSheet.setBackground(getResources().getDrawable(R.drawable.curved_layout));
         coordinatorLayout.setVisibility(View.VISIBLE);
+        listView_topics_recorded.setVisibility(View.GONE);
+        select_next_day.setVisibility(View.GONE);
+        select_previous_day.setVisibility(View.GONE);
+        current_day_display.setVisibility(View.GONE);
 
         getWindow().setStatusBarColor(getResources().getColor(R.color.colorPrimary));
         getWindow().getDecorView().setSystemUiVisibility(0);
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @SuppressLint("WrongConstant")
     private void expand_bottomSheet(BottomSheetBehavior bottomSheetBehavior, View bottomSheet) {
         bottomSheetBehavior.setState(3);
@@ -972,9 +1115,16 @@ public class MainActivity extends AppCompatActivity {
         back_btn.setVisibility(View.VISIBLE);
         bottomSheet.setBackground(getResources().getDrawable(R.drawable.rectangle_layout));
         coordinatorLayout.setVisibility(View.GONE);
+        listView_topics_recorded.setVisibility(View.VISIBLE);
+        select_next_day.setVisibility(View.VISIBLE);
+        select_previous_day.setVisibility(View.VISIBLE);
+        current_day_display.setVisibility(View.VISIBLE);
 
         getWindow().setStatusBarColor(getResources().getColor(R.color.white));
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+
+        update_currentView_list(Calendar.getInstance());
+        initalizeAdapter();
 
         //barChart
         barDataSet = new BarDataSet(barEntries, null);
@@ -1020,8 +1170,73 @@ public class MainActivity extends AppCompatActivity {
 
         barChart.getAxisRight().setLabelCount(4, true);
 
-        String[] xAxisLables = new String[]{"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
+        String[] xAxisLables = new String[]{"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
         barChart.getXAxis().setValueFormatter(new IndexAxisValueFormatter(xAxisLables));
         barChart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private void update_currentView_list(Calendar calendarPassed) {
+        current_View_list.clear();
+        topic_time_max_progress = 0;
+        long total_time_recorded = 0;
+        for(int i = topic_items.size() - 1; i >= 0; i--){
+            if(topic_items.get(i).date_recorded.equals(dateFormat.format(calendarPassed.getTime()))) {
+                current_View_list.add(topic_items.get(i));
+                total_time_recorded += topic_items.get(i).time_recorded;
+                if(topic_time_max_progress < topic_items.get(i).time_recorded){
+                    topic_time_max_progress = topic_items.get(i).time_recorded;
+                }
+            }
+        }
+
+        update_total_time_display(total_time_recorded);
+        topic_time_max_progress += 2;
+    }
+
+    private void initalizeAdapter() {
+        Collections.sort(current_View_list, new time_recordedSorter());
+        topicItems__Adapter listView_topics_adapter = new topicItems__Adapter(this, current_View_list);
+        listView_topics_recorded.setAdapter(listView_topics_adapter);
+        listView_topics_recorded.setDivider(null);
+    }
+
+    private void save_topic_items() {
+        SharedPreferences sharedPreferences = getSharedPreferences("topic_items", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        Gson gson = new Gson();
+        String json = gson.toJson(topic_items);
+
+        editor.putString("topic_items", json);
+        editor.apply();
+    }
+
+    private void load_topic_items() {
+        SharedPreferences sharedPreferences = getSharedPreferences("topic_items", MODE_PRIVATE);
+        Gson gson = new Gson();
+        String json = sharedPreferences.getString("topic_items", null);
+
+        Type type = new TypeToken<ArrayList<topic_item>>(){}.getType();
+        topic_items = gson.fromJson(json, type);
+
+        if (topic_items == null) {
+            topic_items = new ArrayList<>();
+        }
+    }
+
+    private void update_total_time_display(long minutes_recorded) {
+        int hr = (int) minutes_recorded / 60;
+        int minutes = (int) minutes_recorded % 60;
+
+        if(hr == 0){
+            tot_hr_text.setVisibility(View.GONE);
+            tot_hr.setVisibility(View.GONE);
+        }else{
+            tot_hr.setText(String.valueOf(hr));
+            tot_hr_text.setVisibility(View.VISIBLE);
+            tot_hr.setVisibility(View.VISIBLE);
+        }
+
+        tot_min.setText(String.valueOf(minutes));
     }
 }
