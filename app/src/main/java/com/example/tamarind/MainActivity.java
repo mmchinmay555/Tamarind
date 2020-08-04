@@ -10,12 +10,14 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
 import android.icu.util.Calendar;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
@@ -25,23 +27,16 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.github.mikephil.charting.charts.BarChart;
-import com.github.mikephil.charting.components.XAxis;
-import com.github.mikephil.charting.data.BarData;
-import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
-import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
-import java.security.cert.CollectionCertStoreParameters;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity {
@@ -59,10 +54,10 @@ public class MainActivity extends AppCompatActivity {
     ProgressBar progressBar;
 
 
-    BarChart barChart;
-    BarData barData;
-    BarDataSet barDataSet;
+//  BarChart SetUp
     ArrayList barEntries;
+    LinearLayout barChart_View;
+    ProgressBar p_sun, p_mon, p_tue, p_wed, p_thu, p_fri, p_sat;
 
     static TextView topic_btn;
     static TextView timerHr, timerMin, timerSec;
@@ -78,17 +73,22 @@ public class MainActivity extends AppCompatActivity {
     public long timerRunning;
     static public long totalSeconds_passed;
     public long timer_started_at;
+    static Calendar first_data;
 
     //tracking data
-    ImageView select_previous_day, select_next_day;
+    ImageView select_previous_week, select_next_week;
     TextView current_day_display;
     ListView listView_topics_recorded;
     static ArrayList<topic_item> topic_items;
     static ArrayList<topic_item> current_View_list;
+    static ArrayList<Integer> current_Week_list;
     DateFormat dateFormat;
     TextView day_reference;
     TextView tot_hr, tot_hr_text, tot_min, tot_min_text;
     static long topic_time_max_progress;
+
+    Calendar calendar;
+    Calendar currentDate;
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
@@ -106,7 +106,6 @@ public class MainActivity extends AppCompatActivity {
         total_time = findViewById(R.id.time_display);
         back_btn = findViewById(R.id.back_button);
         bottom_layout = findViewById(R.id.bottom_layout);
-        barChart = (BarChart) findViewById(R.id.barGraph);
         topLeft_option = findViewById(R.id.topLeft_option);
         topRight_option = findViewById(R.id.topRight_option);
         topic_btn = findViewById(R.id.topic_button);
@@ -119,14 +118,24 @@ public class MainActivity extends AppCompatActivity {
         incrementBy1min = findViewById(R.id.incrementBy1min);
         progressBar = findViewById(R.id.progressBar);
         listView_topics_recorded = findViewById(R.id.listView_topics_recorded);
-        select_next_day = findViewById(R.id.select_next_day);
-        select_previous_day = findViewById(R.id.select_previous_day);
+        select_next_week = findViewById(R.id.select_next_week);
+        select_previous_week = findViewById(R.id.select_previous_week);
         current_day_display = findViewById(R.id.current_day);
         day_reference = findViewById(R.id.day_reference);
         tot_hr = findViewById(R.id.tot_hr);
         tot_hr_text = findViewById(R.id.tot_hr_txt);
         tot_min = findViewById(R.id.tot_min);
         tot_min_text = findViewById(R.id.tot_min_txt);
+        //BarChart related
+        barChart_View = findViewById(R.id.barChart_View);
+        barChart_View.setVisibility(View.GONE);
+        p_sun = findViewById(R.id.Sun);
+        p_mon = findViewById(R.id.Mon);
+        p_tue = findViewById(R.id.Tue);
+        p_wed = findViewById(R.id.Wed);
+        p_thu = findViewById(R.id.Thu);
+        p_fri = findViewById(R.id.Fri);
+        p_sat = findViewById(R.id.Sat);
 
         bottomSheet.setNestedScrollingEnabled(true);
 
@@ -147,7 +156,6 @@ public class MainActivity extends AppCompatActivity {
         isBreak = getBreakState();
         back_btn.setVisibility(View.GONE);
         incrementBy1min.setVisibility(View.INVISIBLE);
-        barChart.setVisibility(View.GONE);
 
         topicSelected = "";
         incrementedTimeInMin = getIncrementedTimeByMin();
@@ -157,13 +165,14 @@ public class MainActivity extends AppCompatActivity {
 
         //time recording
         load_topic_items();
+        first_data = Calendar.getInstance();
 
         current_View_list = new ArrayList<topic_item>();
         dateFormat = new SimpleDateFormat("EEE , dd MMM");
         update_currentView_list(Calendar.getInstance());
         listView_topics_recorded.setVisibility(View.GONE);
-        select_previous_day.setVisibility(View.GONE);
-        select_next_day.setVisibility(View.GONE);
+        select_previous_week.setVisibility(View.GONE);
+        select_next_week.setVisibility(View.GONE);
         current_day_display.setVisibility(View.GONE);
 
         if(topicSelected.isEmpty()){
@@ -269,7 +278,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if(String.valueOf(bottomSheetBehavior.getState()).equals("4")){
                     expand_bottomSheet(bottomSheetBehavior, bottomSheet);
-                    barChart.setVisibility(View.VISIBLE);
+                    //barChart.setVisibility(View.VISIBLE);
                     initialize_bar();
                 }
             }
@@ -281,7 +290,7 @@ public class MainActivity extends AppCompatActivity {
                 if(String.valueOf(bottomSheetBehavior.getState()).equals("3")){
                     v.startAnimation(AnimationUtils.loadAnimation(MainActivity.this, R.anim.on_click));
                     collapse_bottomSheet(bottomSheetBehavior, bottomSheet);
-                    barChart.setVisibility(View.GONE);
+                    barChart_View.setVisibility(View.GONE);
                 }
             }
         });
@@ -360,8 +369,6 @@ public class MainActivity extends AppCompatActivity {
                     getTopicSelectedFromSharedPrefs();
 
                     Log.i("topicSelectedTopicBtn", topicSelected);
-
-
                 }
             }
         });
@@ -394,14 +401,14 @@ public class MainActivity extends AppCompatActivity {
         });
 
         //bottomSheet
-        final Calendar calendar = Calendar.getInstance();
-        final Calendar currentDate = Calendar.getInstance();
+        calendar = Calendar.getInstance();
+        currentDate = Calendar.getInstance();
         current_day_display.setText(dateFormat.format(calendar.getTime()));
 
-        select_next_day.setOnClickListener(new View.OnClickListener() {
+        select_next_week.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                calendar.add(Calendar.DAY_OF_MONTH, 1);
+                calendar.add(Calendar.DAY_OF_MONTH, 7);
 
                 long difference = calendar.getTimeInMillis() - currentDate.getTimeInMillis();
                 int days_diff = (int) TimeUnit.MILLISECONDS.toDays(difference);
@@ -424,46 +431,56 @@ public class MainActivity extends AppCompatActivity {
                 }
                 update_currentView_list(calendar);
                 initalizeAdapter();
+
+                setData(calendar);
             }
         });
 
-        select_previous_day.setOnClickListener(new View.OnClickListener() {
+        select_previous_week.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                calendar.add(Calendar.DAY_OF_MONTH, -1);
+                calendar.add(Calendar.DAY_OF_MONTH, -7);
                 current_day_display.setText(dateFormat.format(calendar.getTime()));
 
-                long difference = calendar.getTimeInMillis() - currentDate.getTimeInMillis();
-                int days_diff = (int) TimeUnit.MILLISECONDS.toDays(difference);
+                if(calendar.getTimeInMillis() >= PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getLong("first_data_insterted_time",
+                        0)) {
+                    long difference = calendar.getTimeInMillis() - currentDate.getTimeInMillis();
+                    int days_diff = (int) TimeUnit.MILLISECONDS.toDays(difference);
 
-                Log.i("daysDifference", String.valueOf(days_diff));
+                    Log.i("daysDifference", String.valueOf(days_diff));
 
-                if(days_diff == -1){
-                    //yesterday
-                    day_reference.setText("Yesterday");
-                }else {
-                    day_reference.setText("");
+                    if(days_diff == -1){
+                        //yesterday
+                        day_reference.setText("Yesterday");
+                    }else {
+                        day_reference.setText("");
+                    }
+                }else{
+                    calendar.add(Calendar.DAY_OF_MONTH, 7);
+                    current_day_display.setText(dateFormat.format(calendar.getTime()));
+
+                    update_currentView_list(calendar);
+                    initalizeAdapter();
+
+                    setData(calendar);
                 }
 
                 update_currentView_list(calendar);
                 initalizeAdapter();
+
+                setData(calendar);
             }
         });
 
         current_day_display.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                current_day_display.setText(dateFormat.format(currentDate.getTime()));
-                calendar.setTime(currentDate.getTime());
-
-                day_reference.setText("Today");
-                update_currentView_list(calendar);
-                initalizeAdapter();
+                set_to_current_view();
             }
         });
 
         //BarGraph
-        setData();
+        setData(Calendar.getInstance());
 
         final ArrayList<String> days = new ArrayList<>();
         days.add("Mon");
@@ -473,6 +490,22 @@ public class MainActivity extends AppCompatActivity {
         days.add("Fri");
         days.add("Sat");
         days.add("Sun");
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private void set_to_current_view() {
+        current_day_display.setText(dateFormat.format(currentDate.getTime()));
+        calendar.setTime(currentDate.getTime());
+
+        day_reference.setText("Today");
+
+        update_currentView_list(calendar);
+        initalizeAdapter();
+
+        set_bar_Color(String.valueOf(calendar.get(Calendar.DAY_OF_WEEK)));
+        reset_other_barColor(String.valueOf(calendar.get(Calendar.DAY_OF_WEEK)));
+
+        setData(calendar);
     }
 
     private void resetTimer() {
@@ -540,12 +573,14 @@ public class MainActivity extends AppCompatActivity {
         store_is_canceled(false);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     private void post_savedChanges() {
         Log.i("postChanges", "saved");
         MainActivity.topRight_option.setText("Set Timer");
         MainActivity.topLeft_option.setVisibility(View.INVISIBLE);
         MainActivity.incrementBy1min.setVisibility(View.INVISIBLE);
         MainActivity.incrementedTimeInMin = 0;
+        storeTimePassed(0);
 
         if(getBreakState()){
             MainActivity.totalSeconds_passed = 0;
@@ -565,6 +600,7 @@ public class MainActivity extends AppCompatActivity {
         timerRunning = 0;
         storeTimerState(0);
         progressBar.setProgress(0);
+
         store_is_saved(false);
     }
 
@@ -824,7 +860,7 @@ public class MainActivity extends AppCompatActivity {
         Boolean is_saved = PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getBoolean("is_saved",
                 false);
         Log.i("is_saved", String.valueOf(is_saved));
-        Toast.makeText(MainActivity.this, "saved", Toast.LENGTH_LONG).show();
+        //Toast.makeText(MainActivity.this, "saved", Toast.LENGTH_LONG).show();
         return is_saved;
     }
 
@@ -832,7 +868,7 @@ public class MainActivity extends AppCompatActivity {
         Boolean is_reset = PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getBoolean("is_reset",
                 false);
         Log.i("is_reset", String.valueOf(is_reset));
-        Toast.makeText(MainActivity.this, "is_reset", Toast.LENGTH_LONG).show();
+       // Toast.makeText(MainActivity.this, "is_reset", Toast.LENGTH_LONG).show();
 
         return is_reset;
     }
@@ -840,7 +876,7 @@ public class MainActivity extends AppCompatActivity {
     private Boolean get_is_canceled() {
         Boolean is_canceled = PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getBoolean("is_canceled",
                 false);
-        Toast.makeText(MainActivity.this, "is_canceled", Toast.LENGTH_LONG).show();
+        //poToast.makeText(MainActivity.this, "is_canceled", Toast.LENGTH_LONG).show();
         return is_canceled;
     }
 
@@ -1009,9 +1045,21 @@ public class MainActivity extends AppCompatActivity {
         load_topic_items();
         //record time
         Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(calendar.getTimeInMillis() - (TimeSetter.seconds * 1000) - ((getIncrementedTimeByMin() + 4) * 60 * 1000));
-        String date = dateFormat.format(calendar.getTime() );
-        topic_item topic_item = new topic_item(topicSelected, totalSeconds_passed, date , calendar.get(Calendar.DAY_OF_WEEK));
+        calendar.setTimeInMillis(calendar.getTimeInMillis() - getTimePassed());
+        String date = dateFormat.format(calendar.getTime());
+        topic_item topic_item = new topic_item(topicSelected, totalSeconds_passed / 60, date , calendar.get(Calendar.DAY_OF_WEEK));
+
+        Log.i("topicItemsSize", String.valueOf(topic_items.size()));
+        if(topic_items.size() == 0) {
+            first_data.setTime(calendar.getTime());
+            first_data.add(Calendar.DAY_OF_MONTH, -1 * (first_data.get(Calendar.DAY_OF_WEEK) - 1));
+            PreferenceManager.getDefaultSharedPreferences(MainActivity.this).edit().putLong("first_data_insterted_time",
+                    first_data.getTimeInMillis()).commit();
+
+            Log.i("firstTime", "added");
+            Log.i("dateRecoded", String.valueOf(PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getLong("first_data_insterted_time",
+                    0)));
+        }
 
         Boolean found_item = false;
         for(int i = 0; i < topic_items.size(); i++) {
@@ -1076,20 +1124,86 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initialize_bar() {
-        barChart.animateY(  800);
+       //animate barCharts
     }
 
-    private void setData(){
-        barEntries = new ArrayList<>();
-        barEntries.add(new BarEntry(0f, 3.0f));
-        barEntries.add(new BarEntry(1f, 2.0f));
-        barEntries.add(new BarEntry(2f, 3.72f));
-        barEntries.add(new BarEntry(3f, 4.12f));
-        barEntries.add(new BarEntry(4f, 2.4f));
-        barEntries.add(new BarEntry(5f, 5.32f));
-        barEntries.add(new BarEntry(6f, 3.8f));
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private void setData(Calendar calendar){
+        get_current_week_data(calendar);
+
+        barEntries = new ArrayList<Long>();
+        barEntries.clear();
+
+        Log.i("set_crnt_wk", String.valueOf(current_Week_list));
+        int max_total = 0;
+        int c = 0;
+        for(int i = 0; i < 7; i++){
+            c = current_Week_list.get((6 - i));
+            barEntries.add(c);
+            Log.i("barEntr", String.valueOf(c) + " " + i);
+            if(max_total < current_Week_list.get(i)) {
+                max_total = current_Week_list.get(i);
+            }
+        }
+        Log.i("max_total", String.valueOf(max_total));
+        Log.i("barEntries", String.valueOf(barEntries));
+
+        p_sun.setProgress(((Integer) barEntries.get(0) * 100) / (max_total + 10));
+        p_mon.setProgress(((Integer) barEntries.get(1) * 100) / (max_total + 10));
+        p_tue.setProgress(((Integer) barEntries.get(2) * 100) / (max_total + 10));
+        p_wed.setProgress(((Integer) barEntries.get(3) * 100) / (max_total + 10));
+        p_thu.setProgress(((Integer) barEntries.get(4) * 100) / (max_total + 10));
+        p_fri.setProgress(((Integer) barEntries.get(5) * 100) / (max_total + 10));
+        p_sat.setProgress(((Integer) barEntries.get(6) * 100) / (max_total + 10));
+
+        int current_day_week_no = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
+        set_bar_Color(String.valueOf(current_day_week_no));
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private void get_current_week_data(Calendar calendar) {
+        int current_day_week_no = calendar.get(Calendar.DAY_OF_WEEK);
+        Log.i("CurrentWeekNo", String.valueOf(current_day_week_no));
+        //sunday = 1
+        current_Week_list = new ArrayList<Integer>();
+        current_Week_list.clear();
+        // crnt_wk 1, day = day + 6
+        // crnt wk 2, day = day + 5
+        // crnt_wk 3, day = day + 4
+        // crnt wk 4, day = day + 3
+        // crnt_wk 5, day = day + 2
+        // crnt wk 6, day = day + 1
+        // crnt wk 7, day = day + 0
+
+//        for(int i = 0; i <= 6; i++){
+//            current_Week_list.add(0);
+//        }
+
+        int day_to_be_incremented = 7 - current_day_week_no;
+        Log.i("before_Add", dateFormat.format(calendar.getTime()));
+        calendar.add(Calendar.DAY_OF_MONTH, day_to_be_incremented);
+        Log.i("before_Add", dateFormat.format(calendar.getTime()));
+        // finding the index of topic item, whose date = calendar selected
+        // calculate the sum of all the values of that date and add to the current_Week_list array
+        int days_total;
+        calendar.add(Calendar.DAY_OF_MONTH, 1);
+        for(int j = 0; j < 7; j++){
+            days_total = 0;
+            calendar.add(Calendar.DAY_OF_MONTH, -1);
+
+            for(int i = topic_items.size() - 1; i >= 0; i--){
+                Log.i("date_recorded", String.valueOf(topic_items.get(i).date_recorded) + ", " + dateFormat.format(calendar.getTime()));
+                if(topic_items.get(i).date_recorded.equals(dateFormat.format(calendar.getTime()))) {
+                    days_total += topic_items.get(i).time_recorded;
+                    Log.i("time_recorded", String.valueOf(topic_items.get(i).time_recorded));
+                }
+            }
+            Log.i("date_now", dateFormat.format(calendar.getTime()) + ",   " + j + ", " + days_total);
+            current_Week_list.add(j, days_total);
+        }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @SuppressLint("WrongConstant")
     private void collapse_bottomSheet(BottomSheetBehavior bottomSheetBehavior, View bottomSheet) {
         bottomSheetBehavior.setState(4);
@@ -1098,9 +1212,12 @@ public class MainActivity extends AppCompatActivity {
         bottomSheet.setBackground(getResources().getDrawable(R.drawable.curved_layout));
         coordinatorLayout.setVisibility(View.VISIBLE);
         listView_topics_recorded.setVisibility(View.GONE);
-        select_next_day.setVisibility(View.GONE);
-        select_previous_day.setVisibility(View.GONE);
+        select_next_week.setVisibility(View.GONE);
+        select_previous_week.setVisibility(View.GONE);
         current_day_display.setVisibility(View.GONE);
+        barChart_View.setVisibility(View.GONE);
+
+        set_to_current_view();
 
         getWindow().setStatusBarColor(getResources().getColor(R.color.colorPrimary));
         getWindow().getDecorView().setSystemUiVisibility(0);
@@ -1108,7 +1225,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     @RequiresApi(api = Build.VERSION_CODES.N)
-    @SuppressLint("WrongConstant")
+    @SuppressLint({"WrongConstant", "ClickableViewAccessibility"})
     private void expand_bottomSheet(BottomSheetBehavior bottomSheetBehavior, View bottomSheet) {
         bottomSheetBehavior.setState(3);
 
@@ -1116,9 +1233,10 @@ public class MainActivity extends AppCompatActivity {
         bottomSheet.setBackground(getResources().getDrawable(R.drawable.rectangle_layout));
         coordinatorLayout.setVisibility(View.GONE);
         listView_topics_recorded.setVisibility(View.VISIBLE);
-        select_next_day.setVisibility(View.VISIBLE);
-        select_previous_day.setVisibility(View.VISIBLE);
+        select_next_week.setVisibility(View.VISIBLE);
+        select_previous_week.setVisibility(View.VISIBLE);
         current_day_display.setVisibility(View.VISIBLE);
+        barChart_View.setVisibility(View.VISIBLE);
 
         getWindow().setStatusBarColor(getResources().getColor(R.color.white));
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
@@ -1126,53 +1244,7 @@ public class MainActivity extends AppCompatActivity {
         update_currentView_list(Calendar.getInstance());
         initalizeAdapter();
 
-        //barChart
-        barDataSet = new BarDataSet(barEntries, null);
-        barData = new BarData(barDataSet);
-
-        barChart.getLegend().setEnabled(false);
-
-        barChart.setData(barData);
-        barDataSet.setColor(getResources().getColor(R.color.low_primary));
-        barChart.setDescription(null);
-
-        barChart.getAxisLeft().setDrawAxisLine(false);
-        barChart.getAxisRight().setDrawAxisLine(false);
-
-        barChart.getXAxis().setDrawLabels(true);
-        barChart.getXAxis().setDrawGridLines(false);
-        barChart.getXAxis().setDrawAxisLine(false);
-
-        barChart.animateX(800);
-        barChart.animateY(800);
-
-        barChart.setFitBars(true);
-
-        barChart.setPinchZoom(false);
-        barChart.setDoubleTapToZoomEnabled(false);
-
-        barDataSet.setDrawValues(false);
-        barDataSet.setHighLightColor(getResources().getColor(R.color.colorPrimary));
-        barChart.getAxisLeft().setDrawLabels(false);
-        barChart.getXAxis().setDrawLabels(true);
-
-        barChart.getXAxis().setTextSize(12);
-
-        barChart.getXAxis().setEnabled(true);
-        barChart.getAxisRight().setEnabled(true);
-        barChart.getAxisLeft().setEnabled(false);
-
-        barChart.getAxisRight().setTextColor(getResources().getColor(R.color.unFocused_dark));
-        barChart.getAxisRight().setTextSize(14);
-
-        barChart.getAxisRight().setAxisMaximum(6);
-        barChart.getAxisRight().setAxisMinimum(0);
-
-        barChart.getAxisRight().setLabelCount(4, true);
-
-        String[] xAxisLables = new String[]{"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
-        barChart.getXAxis().setValueFormatter(new IndexAxisValueFormatter(xAxisLables));
-        barChart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
+        setData(Calendar.getInstance());
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -1202,19 +1274,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void save_topic_items() {
-        SharedPreferences sharedPreferences = getSharedPreferences("topic_items", MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
         Gson gson = new Gson();
         String json = gson.toJson(topic_items);
 
-        editor.putString("topic_items", json);
-        editor.apply();
+        PreferenceManager.getDefaultSharedPreferences(MainActivity.this).edit().putString("topic_items",
+                json).commit();
     }
 
     private void load_topic_items() {
-        SharedPreferences sharedPreferences = getSharedPreferences("topic_items", MODE_PRIVATE);
         Gson gson = new Gson();
-        String json = sharedPreferences.getString("topic_items", null);
+        String json =  PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getString("topic_items",
+                null);
 
         Type type = new TypeToken<ArrayList<topic_item>>(){}.getType();
         topic_items = gson.fromJson(json, type);
@@ -1236,7 +1306,100 @@ public class MainActivity extends AppCompatActivity {
             tot_hr_text.setVisibility(View.VISIBLE);
             tot_hr.setVisibility(View.VISIBLE);
         }
-
         tot_min.setText(String.valueOf(minutes));
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public void barClicked(View view) {
+        set_bar_Color(view.getTag().toString());
+        reset_other_barColor(view.getTag().toString());
+
+        int crnt_wk_num = calendar.get(Calendar.DAY_OF_WEEK);
+        int barSelected_wk =   Integer.parseInt(view.getTag().toString());
+
+        reselect_week_no(barSelected_wk - crnt_wk_num);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private void reselect_week_no(int i) {
+        calendar.add(Calendar.DAY_OF_MONTH, i);
+
+        long difference = calendar.getTimeInMillis() - currentDate.getTimeInMillis();
+        int days_diff = (int) TimeUnit.MILLISECONDS.toDays(difference);
+        Log.i("daysDifference", String.valueOf(days_diff));
+
+        Log.i("firstTime", String.valueOf(PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getLong("first_data_insterted_time",
+                0)));
+        if(calendar.getTimeInMillis() >= PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getLong("first_data_insterted_time",
+                0)) {
+            if(difference <= 0) {
+                current_day_display.setText(dateFormat.format(calendar.getTime()));
+                if(difference == 0){
+                    day_reference.setText("Today");
+                }else if(days_diff == -1){
+                    //yesterday
+                    day_reference.setText("Yesterday");
+                }else{
+                    day_reference.setText("");
+                }
+            }else if(difference > 0) {
+                //today
+                day_reference.setText("Today");
+                calendar.setTime(currentDate.getTime());
+                set_bar_Color(String.valueOf(currentDate.get(Calendar.DAY_OF_WEEK)));
+            }
+            update_currentView_list(calendar);
+            initalizeAdapter();
+        } else{
+            calendar.add(Calendar.DAY_OF_MONTH, -i);
+            set_bar_Color(String.valueOf(calendar.get(Calendar.DAY_OF_WEEK)));
+            reset_other_barColor(String.valueOf(calendar.get(Calendar.DAY_OF_WEEK)));
+
+            Log.i("reachedEnd", String.valueOf(calendar.get(Calendar.DAY_OF_WEEK)));
+        }
+
+    }
+
+    private void set_bar_Color(String tag) {
+        if(tag.equals("1")) {
+            p_sun.setProgressTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPrimary)));
+        }else if(tag.equals("2")) {
+            p_mon.setProgressTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPrimary)));
+        }else if(tag.equals("3")) {
+            p_tue.setProgressTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPrimary)));
+        }else if(tag.equals("4")) {
+            p_wed.setProgressTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPrimary)));
+        }else if(tag.equals("5")) {
+            p_thu.setProgressTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPrimary)));
+        }else if(tag.equals("6")) {
+            p_fri.setProgressTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPrimary)));
+        }else if(tag.equals("7")) {
+            p_sat.setProgressTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPrimary)));
+        }
+    }
+
+    private void reset_other_barColor(String tag) {
+        Log.i("view.getTag", tag);
+        if(!tag.equals("1")) {
+            p_sun.setProgressTintList(ColorStateList.valueOf(getResources().getColor(R.color.low_primary)));
+        }
+        if(!tag.equals("2")) {
+            p_mon.setProgressTintList(ColorStateList.valueOf(getResources().getColor(R.color.low_primary)));
+        }
+        if(!tag.equals("3")) {
+            p_tue.setProgressTintList(ColorStateList.valueOf(getResources().getColor(R.color.low_primary)));
+        }
+        if(!tag.equals("4")) {
+            p_wed.setProgressTintList(ColorStateList.valueOf(getResources().getColor(R.color.low_primary)));
+        }
+        if(!tag.equals("5")) {
+            p_thu.setProgressTintList(ColorStateList.valueOf(getResources().getColor(R.color.low_primary)));
+        }
+        if(!tag.equals("6")) {
+            p_fri.setProgressTintList(ColorStateList.valueOf(getResources().getColor(R.color.low_primary)));
+        }
+        if(!tag.equals("7")) {
+            p_sat.setProgressTintList(ColorStateList.valueOf(getResources().getColor(R.color.low_primary)));
+        }
     }
 }

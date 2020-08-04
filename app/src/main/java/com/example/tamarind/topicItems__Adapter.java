@@ -31,7 +31,7 @@ public class topicItems__Adapter extends ArrayAdapter<topic_item> {
         final TextView tracked_topicTime = convertView.findViewById(R.id.tracked_topicTime);
 
         topicName.setText(item.topic_name);
-        tracked_topicTime.setText(item.time_recorded + "m");
+        tracked_topicTime.setText(getTime_formatted(item.time_recorded));
         tracked_progress.setProgress(getProgress_value(item.time_recorded));
 
         return convertView;
@@ -39,5 +39,18 @@ public class topicItems__Adapter extends ArrayAdapter<topic_item> {
 
     private int getProgress_value(long time_recorded) {
         return (int) ((time_recorded * 100)/MainActivity.topic_time_max_progress);
+    }
+    private String getTime_formatted(long minutes_recorded) {
+        int hr = (int) minutes_recorded / 60;
+        int minutes = (int) minutes_recorded % 60;
+
+        String formatted_time = "";
+        if(hr > 0) {
+            formatted_time = String.valueOf(hr) + "h" + " " + String.valueOf(minutes) + "m";
+        }else {
+            formatted_time = String.valueOf(minutes) + "m";
+        }
+
+        return formatted_time;
     }
 }
