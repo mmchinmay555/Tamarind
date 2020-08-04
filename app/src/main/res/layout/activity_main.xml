@@ -172,7 +172,7 @@
             android:text="null"
             android:textAlignment="center"
             android:textColor="@color/white"
-            android:textSize="30sp" />
+            android:textSize="25sp" />
 
     </LinearLayout>
 
@@ -287,43 +287,7 @@
                     android:textColor="@color/unFocused_dark"
                     android:fontFamily="@font/semibold"/>
             </LinearLayout>
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="35dp"
-                android:layout_gravity="center_horizontal"
-                android:orientation="horizontal">
 
-               <ImageView
-                   android:id="@+id/select_previous_week"
-                   android:background="?actionBarItemBackground"
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   android:src="@drawable/ic_arrow_down"
-                   android:tint="@color/unFocused_dark"
-                   android:rotation="90"/>
-
-                <TextView
-                    android:id="@+id/current_day"
-                    android:layout_width="150dp"
-                    android:layout_height="wrap_content"
-                    android:textSize="18sp"
-                    android:textAlignment="center"
-                    android:textColor="@color/unFocused_dark"
-                    android:text="Mon, 12 Aug"
-                    android:fontFamily="@font/medium"
-                    android:layout_marginHorizontal="15dp"/>
-
-                <ImageView
-                    android:id="@+id/select_next_week"
-                    android:background="?actionBarItemBackground"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_arrow_up"
-                    android:tint="@color/unFocused_dark"
-                    android:rotation="90"/>
-
-            </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/barChart_View"
@@ -543,6 +507,44 @@
                         android:textSize="12sp"
                         android:textColor="@color/text"/>
                 </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="25dp"
+                android:layout_gravity="center_horizontal"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/select_previous_week"
+                    android:background="?actionBarItemBackground"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_arrow_down"
+                    android:tint="@color/unFocused_dark"
+                    android:rotation="90"/>
+
+                <TextView
+                    android:id="@+id/current_day"
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:textAlignment="center"
+                    android:textColor="@color/unFocused_dark"
+                    android:text="Mon, 12 Aug"
+                    android:fontFamily="@font/medium"
+                    android:layout_marginHorizontal="15dp"/>
+
+                <ImageView
+                    android:id="@+id/select_next_week"
+                    android:background="?actionBarItemBackground"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_arrow_up"
+                    android:tint="@color/unFocused_dark"
+                    android:rotation="90"/>
 
             </LinearLayout>
 

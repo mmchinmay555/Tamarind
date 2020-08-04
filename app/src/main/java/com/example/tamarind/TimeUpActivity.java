@@ -287,7 +287,7 @@ public class TimeUpActivity extends AppCompatActivity {
         Boolean found_item = false;
         for(int i = 0; i < topic_items.size(); i++) {
             if (topic_items.get(i).topic_name.equals(topic_item.topic_name) && topic_items.get(i).date_recorded.equals(topic_item.date_recorded)) {
-                topic_items.get(i).time_recorded += totalSeconds_passed;
+                topic_items.get(i).time_recorded += totalSeconds_passed / 60;
                 found_item = true;
 
                 Log.i("updatedItem", topic_items.get(i).topic_name + "\n" + topic_items.get(i).date_recorded + "\n" + topic_items.get(i).day_recorded + "\n" + topic_items.get(i).time_recorded);
@@ -295,7 +295,9 @@ public class TimeUpActivity extends AppCompatActivity {
         }
 
         if(!found_item) {
-            topic_items.add(topic_item);
+            if(topic_item.getTime_recorded() != 0) {
+                topic_items.add(topic_item);
+            }
             Log.i("recordedItem", topic_item.topic_name + "\n" + topic_item.date_recorded + "\n" + topic_item.day_recorded + "\n" + topic_item.time_recorded);
         }
 
