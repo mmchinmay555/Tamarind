@@ -32,6 +32,7 @@
             android:id="@+id/suggestions"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
             android:text="Suggestions"
             android:textSize="17sp"
             android:fontFamily="@font/medium"

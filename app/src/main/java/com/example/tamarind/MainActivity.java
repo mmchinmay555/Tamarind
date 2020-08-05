@@ -1451,7 +1451,7 @@ public class MainActivity extends AppCompatActivity implements bottom_sheet_more
             emailIntent.setType("text/plain");
             emailIntent.putExtra(Intent.EXTRA_EMAIL, TO);
             emailIntent.putExtra(Intent.EXTRA_CC, CC);
-            emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Sugestions for Tamarind App");
+            emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Suggestions for Tamarind App");
             emailIntent.putExtra(Intent.EXTRA_TEXT, "Your Suggestions");
 
             try {
