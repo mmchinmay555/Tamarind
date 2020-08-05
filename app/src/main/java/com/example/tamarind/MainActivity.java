@@ -421,28 +421,32 @@ public class MainActivity extends AppCompatActivity {
                     }else{
                         day_reference.setText("");
                     }
+                    setData(calendar);
                 }else if(difference > 0) {
                     //today
-                    day_reference.setText("Today");
-                    calendar.setTime(currentDate.getTime());
+                    //day_reference.setText("Today");
+                    calendar.add(Calendar.DAY_OF_MONTH, -7);
+
                 }
                 update_currentView_list(calendar);
                 initalizeAdapter();
 
-                setData(calendar);
+                Log.i("calendarTime", String.valueOf(calendar.getTime()));
             }
         });
 
         select_previous_week.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                long cal_stack = calendar.getTimeInMillis();
+                Log.i("calendarTime", String.valueOf(calendar.getTime()));
                 calendar.add(Calendar.DAY_OF_MONTH, -7);
-                current_day_display.setText(dateFormat.format(calendar.getTime()));
-
+                Log.i("calendarTime", String.valueOf(calendar.getTime()));
                 if(calendar.getTimeInMillis() >= PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getLong("first_data_insterted_time",
-                        0)) {
+                        Calendar.getInstance().getTimeInMillis())) {
                     long difference = calendar.getTimeInMillis() - currentDate.getTimeInMillis();
                     int days_diff = (int) TimeUnit.MILLISECONDS.toDays(difference);
+                    Log.i("prev", "if");
 
                     Log.i("daysDifference", String.valueOf(days_diff));
 
@@ -452,20 +456,25 @@ public class MainActivity extends AppCompatActivity {
                     }else {
                         day_reference.setText("");
                     }
-                }else{
-                    calendar.add(Calendar.DAY_OF_MONTH, 7);
                     current_day_display.setText(dateFormat.format(calendar.getTime()));
 
                     update_currentView_list(calendar);
                     initalizeAdapter();
 
                     setData(calendar);
+                }else{
+                    calendar.setTimeInMillis(cal_stack);
+                    Log.i("calendarTime", String.valueOf(calendar.getTime()));
+                    Log.i("prev", "else");
+                    current_day_display.setText(dateFormat.format(calendar.getTime()));
+                    update_currentView_list(calendar);
+                    initalizeAdapter();
+                    Log.i("calendarTime", String.valueOf(calendar.getTime()));
+                    //setData(calendar);
+
                 }
 
-                update_currentView_list(calendar);
-                initalizeAdapter();
-
-                setData(calendar);
+                Log.i("cal_stack", String.valueOf(cal_stack));
             }
         });
 
@@ -944,6 +953,7 @@ public class MainActivity extends AppCompatActivity {
         return millisLeft;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.GINGERBREAD)
     private void saveTopicInSharedPrefs() {
         SharedPreferences sharedPreferences = getSharedPreferences("sharedPrefsTopicSelected", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -1332,7 +1342,7 @@ public class MainActivity extends AppCompatActivity {
                 0)) {
             if(difference <= 0) {
                 current_day_display.setText(dateFormat.format(calendar.getTime()));
-                if(difference == 0){
+                if(days_diff == 0){
                     day_reference.setText("Today");
                 }else if(days_diff == -1){
                     //yesterday
@@ -1358,6 +1368,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void set_bar_Color(String tag) {
         if(tag.equals("1")) {
             p_sun.setProgressTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPrimary)));
@@ -1376,6 +1387,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void reset_other_barColor(String tag) {
         Log.i("view.getTag", tag);
         if(!tag.equals("1")) {
