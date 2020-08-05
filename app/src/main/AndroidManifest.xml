@@ -16,7 +16,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".HomeActivity">
+        <activity android:name=".HomeActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -25,10 +26,15 @@
         </activity>
         <activity
             android:name=".TimeUpActivity"
-            tools:ignore="Instantiatable" />
-        <activity android:name=".TopicsList" />
-        <activity android:name=".TimeSetter" />
-        <activity android:name=".MainActivity">
+            tools:ignore="Instantiatable"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".TopicsList"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".TimeSetter"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".MainActivity"
+            android:screenOrientation="portrait">
+
         </activity>
 
         <meta-data
