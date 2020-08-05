@@ -111,18 +111,26 @@ public class TopicsList extends AppCompatActivity {
     }
 
     private void addTopic(String s) {
-        topic_item_forList item = new topic_item_forList(s);
-        topics.add(item);
+        if(s.equals("Break") || s.equals("BREAK")){
+            Snackbar.make(newTopic_addText, "Break already exists", Snackbar.LENGTH_SHORT)
+                    .setTextColor(getResources().getColor(R.color.white))
+                    .setAnimationMode(BaseTransientBottomBar.ANIMATION_MODE_SLIDE)
+                    .show();
+        }else{
+            topic_item_forList item = new topic_item_forList(s);
+            topics.add(item);
 
-        SharedPreferences sharedPreferences = getSharedPreferences("sharedPrefs", MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        Gson gson = new Gson();
-        String json = gson.toJson(topics);
+            SharedPreferences sharedPreferences = getSharedPreferences("sharedPrefs", MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            Gson gson = new Gson();
+            String json = gson.toJson(topics);
 
-        editor.putString("topicsList", json);
-        editor.apply();
+            editor.putString("topicsList", json);
+            editor.apply();
 
-        listView_topics.smoothScrollByOffset(topics.size());
+            listView_topics.smoothScrollByOffset(topics.size());
+        }
+
     }
 
     private void loadTopics() {

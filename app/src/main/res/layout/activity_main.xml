@@ -677,16 +677,6 @@
 
         <ImageView
             android:background="?actionBarItemBackground"
-            android:id="@+id/menu_button"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="top|left"
-            android:padding="20dp"
-            android:src="@drawable/ic_menu"
-            android:tint="@color/unFocused_dark" />
-
-        <ImageView
-            android:background="?actionBarItemBackground"
             android:id="@+id/more_btn"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"

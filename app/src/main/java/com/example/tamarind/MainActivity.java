@@ -13,6 +13,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.icu.util.Calendar;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -24,7 +25,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.gson.Gson;
@@ -37,9 +40,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements bottom_sheet_more.BottomSheetListener {
     private BottomSheetBehavior bottomSheetBehavior;
-    ImageView menu_btn, more_btn, back_btn;
+    ImageView  more_btn, back_btn;
 
     static String topicSelected;
 
@@ -97,7 +100,6 @@ public class MainActivity extends AppCompatActivity {
         final View bottomSheet = findViewById(R.id.bottomSheet);
 
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
-        menu_btn = findViewById(R.id.menu_button);
         more_btn = findViewById(R.id.more_btn);
         coordinatorLayout = findViewById(R.id.app_bar);
         appbar = findViewById(R.id.topbar);
@@ -293,17 +295,13 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        menu_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                v.startAnimation(AnimationUtils.loadAnimation(MainActivity.this, R.anim.on_click));
-            }
-        });
-
         more_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 v.startAnimation(AnimationUtils.loadAnimation(MainActivity.this, R.anim.on_click));
+                //implement bottomSheet
+                bottom_sheet_more bottom_sheet = new bottom_sheet_more();
+                bottom_sheet.show(getSupportFragmentManager(), "bottomSheet_more");
             }
         });
 
@@ -1194,6 +1192,7 @@ public class MainActivity extends AppCompatActivity {
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void get_current_week_data(Calendar calendar) {
         int current_day_week_no = calendar.get(Calendar.DAY_OF_WEEK);
+        long cal_stack = calendar.getTimeInMillis();
         Log.i("CurrentWeekNo", String.valueOf(current_day_week_no));
         //sunday = 1
         current_Week_list = new ArrayList<Integer>();
@@ -1232,6 +1231,8 @@ public class MainActivity extends AppCompatActivity {
             Log.i("date_now", dateFormat.format(calendar.getTime()) + ",   " + j + ", " + days_total);
             current_Week_list.add(j, days_total);
         }
+
+        calendar.setTimeInMillis(cal_stack);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -1433,6 +1434,33 @@ public class MainActivity extends AppCompatActivity {
         }
         if(!tag.equals("7")) {
             p_sat.setProgressTintList(ColorStateList.valueOf(getResources().getColor(R.color.low_primary)));
+        }
+    }
+
+    @Override
+    public void onButtonClick(String text) {
+        //bottomSheet
+        if(text.equals("Suggestions")) {
+            Toast.makeText(this, "Suggestions", Toast.LENGTH_SHORT).show();
+
+            String[] TO = {"mmchinmay555@gmail.com"};
+            String[] CC = {""};
+            Intent emailIntent = new Intent(Intent.ACTION_SEND);
+
+            emailIntent.setData(Uri.parse("mailto:"));
+            emailIntent.setType("text/plain");
+            emailIntent.putExtra(Intent.EXTRA_EMAIL, TO);
+            emailIntent.putExtra(Intent.EXTRA_CC, CC);
+            emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Sugestions for Tamarind App");
+            emailIntent.putExtra(Intent.EXTRA_TEXT, "Your Suggestions");
+
+            try {
+                startActivity(Intent.createChooser(emailIntent, "Select your email client"));
+                finish();
+            } catch (android.content.ActivityNotFoundException ex) {
+                Toast.makeText(MainActivity.this, "There is no email client installed.", Toast.LENGTH_SHORT).show();
+            }
+
         }
     }
 }

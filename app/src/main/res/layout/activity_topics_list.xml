@@ -91,6 +91,7 @@
             android:textColor="@color/text"
             android:backgroundTint="@color/white_low"
             android:layout_gravity="center_vertical|left"
+            android:maxLines="1"
             android:hint="Add New"/>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
