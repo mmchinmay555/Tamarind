@@ -38,7 +38,7 @@ public class appNotification extends Application {
 
             NotificationChannel channel2 = new NotificationChannel(
                     CHANNEL_2_ID,
-                    "Channel 2",
+                    "Short Alert",
                     NotificationManager.IMPORTANCE_LOW
             );
             channel2.setDescription("This is Channel 2");

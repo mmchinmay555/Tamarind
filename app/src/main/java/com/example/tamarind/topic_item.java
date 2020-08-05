@@ -1,7 +1,5 @@
 package com.example.tamarind;
 
-import java.time.DayOfWeek;
-import java.util.Date;
 
 public class topic_item {
     String topic_name;
