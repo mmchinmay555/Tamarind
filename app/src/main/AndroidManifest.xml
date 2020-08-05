@@ -16,24 +16,26 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".TimeUpActivity"
-            tools:ignore="Instantiatable" />
-        <activity android:name=".TopicsList" />
-        <activity android:name=".TimeSetter" />
-        <activity android:name=".MainActivity">
+        <activity android:name=".HomeActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".TimeUpActivity"
+            tools:ignore="Instantiatable" />
+        <activity android:name=".TopicsList" />
+        <activity android:name=".TimeSetter" />
+        <activity android:name=".MainActivity">
+        </activity>
 
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
 
-        <receiver android:name=".AlertReciever"/>
-
+        <receiver android:name=".AlertReciever" />
     </application>
 
 </manifest>

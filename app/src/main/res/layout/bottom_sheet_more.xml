@@ -41,5 +41,29 @@
             android:textColor="@color/text"/>
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:paddingTop="20dp"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Product by"
+            android:fontFamily="@font/medium"
+            android:textSize="12sp"
+            android:textColor="@color/text"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=" Triplefy"
+            android:fontFamily="@font/semibold"
+            android:textSize="12sp"
+            android:textColor="@color/text"/>
+
+    </LinearLayout>
+
 
 </LinearLayout>
