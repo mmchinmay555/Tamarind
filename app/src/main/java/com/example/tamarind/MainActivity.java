@@ -1442,25 +1442,13 @@ public class MainActivity extends AppCompatActivity implements bottom_sheet_more
         //bottomSheet
         if(text.equals("Suggestions")) {
             Toast.makeText(this, "Suggestions", Toast.LENGTH_SHORT).show();
+            Intent mailIntent = new Intent(Intent.ACTION_VIEW);
 
-            String[] TO = {"mmchinmay555@gmail.com"};
-            String[] CC = {""};
-            Intent emailIntent = new Intent(Intent.ACTION_SEND);
+            //initialse the values for the mail
+            Uri data = Uri.parse("mailto:?subject=" + "Tamarind App suggestion"+ "&body=" + "Your Suggestions" + "&to=" + "mmchinmay555@gmail.com");
 
-            emailIntent.setData(Uri.parse("mailto:"));
-            emailIntent.setType("text/plain");
-            emailIntent.putExtra(Intent.EXTRA_EMAIL, TO);
-            emailIntent.putExtra(Intent.EXTRA_CC, CC);
-            emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Suggestions for Tamarind App");
-            emailIntent.putExtra(Intent.EXTRA_TEXT, "Your Suggestions");
-
-            try {
-                startActivity(Intent.createChooser(emailIntent, "Select your email client"));
-                finish();
-            } catch (android.content.ActivityNotFoundException ex) {
-                Toast.makeText(MainActivity.this, "There is no email client installed.", Toast.LENGTH_SHORT).show();
-            }
-
+            mailIntent.setData(data);
+            startActivity(Intent.createChooser(mailIntent, "Send mail..."));
         }
     }
 }
