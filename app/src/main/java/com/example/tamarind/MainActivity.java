@@ -2,6 +2,7 @@ package com.example.tamarind;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
@@ -53,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
 
 //  BarChart SetUp
     ArrayList barEntries;
-    LinearLayout barChart_View;
+    CoordinatorLayout barChart_View;
     ProgressBar p_sun, p_mon, p_tue, p_wed, p_thu, p_fri, p_sat;
 
     static TextView topic_btn;
@@ -1166,6 +1167,28 @@ public class MainActivity extends AppCompatActivity {
 
         int current_day_week_no = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
         set_bar_Color(String.valueOf(current_day_week_no));
+
+        //update_barLines
+        TextView barLine_1 = findViewById(R.id.barLine_1);
+        TextView barLine_2 = findViewById(R.id.barLine_2);
+        TextView barLine_3 = findViewById(R.id.barLine_3);
+
+        barLine_1.setText(getTime_formatted(max_total + 10));
+        barLine_2.setText(getTime_formatted(((max_total + 10) * 2) / 3));
+        barLine_3.setText(getTime_formatted((max_total + 10) / 3));
+    }
+    private String getTime_formatted(long minutes_recorded) {
+        int hr = (int) minutes_recorded / 60;
+        int minutes = (int) minutes_recorded % 60;
+
+        String formatted_time = "";
+        if(hr > 0) {
+            formatted_time = String.valueOf(hr) + "h" + " " + String.valueOf(minutes) + "m";
+        }else {
+            formatted_time = String.valueOf(minutes) + "m";
+        }
+
+        return formatted_time;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)

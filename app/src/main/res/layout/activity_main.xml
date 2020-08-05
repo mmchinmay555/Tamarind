@@ -288,9 +288,120 @@
                     android:fontFamily="@font/semibold"/>
             </LinearLayout>
 
+            <androidx.coordinatorlayout.widget.CoordinatorLayout
+                android:id="@+id/barChart_View"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_marginTop="1dp"
+                    android:layout_marginBottom="15dp"
+                    android:layout_height="wrap_content"
+                    android:paddingHorizontal="20dp"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+                        <TextView
+                            android:id="@+id/barLine_1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="6h"
+                            android:textSize="14dp"
+                            android:fontFamily="@font/medium"
+                            android:textColor="@color/unFocused_dark"
+                            android:layout_gravity="right"/>
+                        <View
+                            android:id="@+id/view1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="0.5dp"
+                            android:layout_below="@+id/textView1"
+                            android:layout_alignParentRight="true"
+                            android:layout_marginHorizontal="5dp"
+                            android:layout_marginTop="2dp"
+                            android:background="@color/unFocused" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:orientation="vertical">
+                        <TextView
+                            android:id="@+id/barLine_2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="6h"
+                            android:textSize="14dp"
+                            android:fontFamily="@font/medium"
+                            android:textColor="@color/unFocused_dark"
+                            android:layout_gravity="right"/>
+                        <View
+                            android:layout_width="wrap_content"
+                            android:layout_height="0.5dp"
+                            android:layout_below="@+id/textView1"
+                            android:layout_alignParentRight="true"
+                            android:layout_marginHorizontal="5dp"
+                            android:layout_marginTop="2dp"
+                            android:background="@color/unFocused" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:orientation="vertical">
+                        <TextView
+                            android:id="@+id/barLine_3"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="6h"
+                            android:textSize="14dp"
+                            android:fontFamily="@font/medium"
+                            android:textColor="@color/unFocused_dark"
+                            android:layout_gravity="right"/>
+                        <View
+                            android:layout_width="wrap_content"
+                            android:layout_height="0.5dp"
+                            android:layout_below="@+id/textView1"
+                            android:layout_alignParentRight="true"
+                            android:layout_marginHorizontal="5dp"
+                            android:layout_marginTop="2dp"
+                            android:background="@color/unFocused" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:orientation="vertical">
+                        <TextView
+                            android:id="@+id/barLine_4"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0m"
+                            android:textSize="14dp"
+                            android:fontFamily="@font/medium"
+                            android:textColor="@color/unFocused_dark"
+                            android:layout_gravity="right"/>
+                        <View
+                            android:layout_width="wrap_content"
+                            android:layout_height="0.5dp"
+                            android:layout_below="@+id/textView1"
+                            android:layout_alignParentRight="true"
+                            android:layout_marginHorizontal="5dp"
+                            android:layout_marginTop="2dp"
+                            android:background="@color/unFocused" />
+                    </LinearLayout>
+
+
+
+                </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/barChart_View"
                 android:layout_width="match_parent"
                 android:layout_marginVertical="15dp"
                 android:layout_height="wrap_content"
@@ -311,7 +422,7 @@
                         android:layout_gravity="center_horizontal"
                         style="@style/Widget.ProgressBar.Vertical"
                         android:progressTint="@color/low_primary"
-                        android:progressBackgroundTint="@color/white"
+                        android:progressBackgroundTint="@color/transparent"
                         android:progress="50"
                         android:tag="1"
                         android:onClick="barClicked"
@@ -341,7 +452,7 @@
                         android:layout_gravity="center_horizontal"
                         style="@style/Widget.ProgressBar.Vertical"
                         android:progressTint="@color/low_primary"
-                        android:progressBackgroundTint="@color/white"
+                        android:progressBackgroundTint="@color/transparent"
                         android:progress="50"
                         android:tag="2"
                         android:onClick="barClicked"
@@ -371,7 +482,7 @@
                         android:layout_gravity="center_horizontal"
                         style="@style/Widget.ProgressBar.Vertical"
                         android:progressTint="@color/low_primary"
-                        android:progressBackgroundTint="@color/white"
+                        android:progressBackgroundTint="@color/transparent"
                         android:progress="50"
                         android:tag="3"
                         android:onClick="barClicked"
@@ -401,7 +512,7 @@
                         android:layout_gravity="center_horizontal"
                         style="@style/Widget.ProgressBar.Vertical"
                         android:progressTint="@color/low_primary"
-                        android:progressBackgroundTint="@color/white"
+                        android:progressBackgroundTint="@color/transparent"
                         android:progress="50"
                         android:tag="4"
                         android:onClick="barClicked"
@@ -431,7 +542,7 @@
                         android:layout_gravity="center_horizontal"
                         style="@style/Widget.ProgressBar.Vertical"
                         android:progressTint="@color/low_primary"
-                        android:progressBackgroundTint="@color/white"
+                        android:progressBackgroundTint="@color/transparent"
                         android:progress="50"
                         android:tag="5"
                         android:onClick="barClicked"
@@ -461,7 +572,7 @@
                         android:layout_gravity="center_horizontal"
                         style="@style/Widget.ProgressBar.Vertical"
                         android:progressTint="@color/low_primary"
-                        android:progressBackgroundTint="@color/white"
+                        android:progressBackgroundTint="@color/transparent"
                         android:progress="50"
                         android:tag="6"
                         android:onClick="barClicked"
@@ -491,7 +602,7 @@
                         android:layout_gravity="center_horizontal"
                         style="@style/Widget.ProgressBar.Vertical"
                         android:progressTint="@color/low_primary"
-                        android:progressBackgroundTint="@color/white"
+                        android:progressBackgroundTint="@color/transparent"
                         android:progress="50"
                         android:tag="7"
                         android:onClick="barClicked"
@@ -509,6 +620,7 @@
                 </LinearLayout>
 
             </LinearLayout>
+            </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
             <LinearLayout
                 android:layout_width="wrap_content"
