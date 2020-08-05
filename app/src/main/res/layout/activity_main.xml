@@ -295,7 +295,7 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_marginTop="0dp"
+                    android:layout_marginTop="2.5dp"
                     android:layout_marginBottom="15dp"
                     android:layout_height="match_parent"
                     android:paddingHorizontal="20dp"
@@ -304,7 +304,7 @@
 
                     <LinearLayout
                         android:layout_width="wrap_content"
-                        android:layout_height="42dp"
+                        android:layout_height="41dp"
                         android:orientation="vertical">
                         <TextView
                             android:id="@+id/barLine_1"
@@ -328,7 +328,7 @@
 
                     <LinearLayout
                         android:layout_width="wrap_content"
-                        android:layout_height="42dp"
+                        android:layout_height="41dp"
 
                         android:orientation="vertical">
                         <TextView
@@ -352,7 +352,7 @@
 
                     <LinearLayout
                         android:layout_width="wrap_content"
-                        android:layout_height="42dp"
+                        android:layout_height="41dp"
 
                         android:orientation="vertical">
                         <TextView
@@ -376,7 +376,7 @@
 
                     <LinearLayout
                         android:layout_width="wrap_content"
-                        android:layout_height="42dp"
+                        android:layout_height="41dp"
                         android:layout_gravity="bottom"
                         android:orientation="vertical">
                         <TextView
