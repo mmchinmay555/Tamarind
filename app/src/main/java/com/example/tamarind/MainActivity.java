@@ -409,7 +409,17 @@ public class MainActivity extends AppCompatActivity implements bottom_sheet_more
             public void onClick(View v) {
                 calendar.add(Calendar.DAY_OF_MONTH, 7);
 
+                currentDate.add(Calendar.DAY_OF_MONTH,  (7 - currentDate.get(Calendar.DAY_OF_WEEK)));
+                currentDate.set(Calendar.HOUR_OF_DAY, 23);
+                currentDate.set(Calendar.MINUTE, 59);
+
+                Log.i("timeSet", String.valueOf(currentDate.getTime()));
                 long difference = calendar.getTimeInMillis() - currentDate.getTimeInMillis();
+
+                currentDate = Calendar.getInstance();
+                currentDate.set(Calendar.HOUR_OF_DAY, 23);
+                currentDate.set(Calendar.MINUTE, 59);
+
                 int days_diff = (int) TimeUnit.MILLISECONDS.toDays(difference);
                 Log.i("daysDifference", String.valueOf(days_diff));
 
@@ -443,7 +453,10 @@ public class MainActivity extends AppCompatActivity implements bottom_sheet_more
                 long cal_stack = calendar.getTimeInMillis();
                 Log.i("calendarTime", String.valueOf(calendar.getTime()));
                 calendar.add(Calendar.DAY_OF_MONTH, -7);
+                calendar.set(Calendar.HOUR_OF_DAY, 23);
+                calendar.set(Calendar.MINUTE, 59);
                 Log.i("calendarTime", String.valueOf(calendar.getTime()));
+
                 if(calendar.getTimeInMillis() >= PreferenceManager.getDefaultSharedPreferences(MainActivity.this).getLong("first_data_insterted_time",
                         Calendar.getInstance().getTimeInMillis())) {
                     long difference = calendar.getTimeInMillis() - currentDate.getTimeInMillis();
@@ -1029,7 +1042,9 @@ public class MainActivity extends AppCompatActivity implements bottom_sheet_more
         if(!isBreak){
             Log.i("timeRecorded", topic_btn.getText() + ": " + totalSeconds_passed);
             countDownTimer.cancel();
-            store_time_recorded(topicSelected, totalSeconds_passed);
+
+            store_time_recorded(topicSelected, getSeconds() + (getIncrementedTimeByMin() * 60) - getMillisLeftInSharedPrefs());
+            Log.i("timeSaved", String.valueOf(getSeconds() + (getIncrementedTimeByMin() * 60) - getMillisLeftInSharedPrefs()));
             totalSeconds_passed = 0;
             storeTimePassed(totalSeconds_passed);
 
@@ -1045,7 +1060,10 @@ public class MainActivity extends AppCompatActivity implements bottom_sheet_more
         storeBreakState(isBreak);
         Log.i("StoreBreakState", "called 852");
         storeMillisLeftInSharedPrefs(0);
+        countDownTimer.cancel();
         storeTimerState(0);
+        countDownTimer = null;
+        progressBar.setProgress(0);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -1125,6 +1143,8 @@ public class MainActivity extends AppCompatActivity implements bottom_sheet_more
 
         cancelAlarm();
         storeTimerState(0);
+        countDownTimer = null;
+        progressBar.setProgress(0);
     }
 
     @Override

@@ -102,7 +102,7 @@ public class TopicsList extends AppCompatActivity {
 
                 setTimeText((int) breakSeconds);
 
-                Snackbar.make(newTopic_addText, "Break", Snackbar.LENGTH_SHORT)
+                Snackbar.make(v, "Break", Snackbar.LENGTH_SHORT)
                         .setTextColor(getResources().getColor(R.color.white))
                         .setAnimationMode(BaseTransientBottomBar.ANIMATION_MODE_SLIDE)
                         .show();
@@ -112,7 +112,7 @@ public class TopicsList extends AppCompatActivity {
 
     private void addTopic(String s) {
         if(s.equals("Break") || s.equals("BREAK")){
-            Snackbar.make(newTopic_addText, "Break already exists", Snackbar.LENGTH_SHORT)
+            Snackbar.make(breakTime, "Break already exists", Snackbar.LENGTH_SHORT)
                     .setTextColor(getResources().getColor(R.color.white))
                     .setAnimationMode(BaseTransientBottomBar.ANIMATION_MODE_SLIDE)
                     .show();
