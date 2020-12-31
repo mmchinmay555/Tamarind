@@ -1,4 +1,4 @@
 <h1>Tamarind</h1>
 
-This is a sample readme file
+<p>This is a sample readme file</p>
 <img src="https://github.com/mmchinmay555/Tamarind/blob/master/app/src/main/Tamarind.png"/>
