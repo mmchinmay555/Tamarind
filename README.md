@@ -5,6 +5,6 @@
 
 <h1>About</h1>
 <ul>
-  <li>An android app to track your work</li>
+  <li>A pomodoro timer app to track your work</li>
   <li>You can also visualize your tracked time graphicalluy using bar garphs</li>
 </ul>
