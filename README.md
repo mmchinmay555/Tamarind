@@ -1,6 +1,6 @@
 <h1>Tamarind</h1>
 
-<p>This is a sample readme file</p>
+<p>TA pomodoro timer app for android</p>
 <img src="https://github.com/mmchinmay555/Tamarind/blob/master/app/src/main/Tamarind.png"/>
 
 <h1>About</h1>
