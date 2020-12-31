@@ -9,6 +9,6 @@
   <li>You can also customize your own time</li>
   <li>Pause or cancel your timer in the middle</li>
   <li>Recieve Full Screen Intent Notification once the timer ends</li>
-  <li>You can also visualize your tracked time graphicalliy using bar garphs</li>
+  <li>You can also visualize your tracked time graphically using bar garphs</li>
 </ul>
 
